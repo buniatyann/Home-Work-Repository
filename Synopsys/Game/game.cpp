@@ -13,8 +13,6 @@ Game::Game() : board{0}, turn(1), score(0) {
 
 void Game::step(char & input) {
     bool valid_step = false; // to keep track if the board is changed
-
-    // VALID STEP ALGORITHM:
     // 1) move empty tiles
     move(input, valid_step);
     // 2) combine adjacent tiles (if equal)
@@ -47,6 +45,7 @@ bool Game::move(char& input, bool& valid_step) {
             }
         }
     break;
+
     case 's': // Move DOWN
         for (int j = 0; j < BSIZE; ++j) { // Parse board from left to right
             for (int i = BSIZE - 1; i >= 0; --i) { // Parse board from bottom to top
@@ -63,6 +62,7 @@ bool Game::move(char& input, bool& valid_step) {
             }
         }
     break;
+
     case 'a': // Move LEFT
         for (int i = 0; i < BSIZE; ++i) { // Parse board from top to bottom
             for (int j = 0; j < BSIZE; ++j) { // Parse board from left to right
@@ -79,6 +79,7 @@ bool Game::move(char& input, bool& valid_step) {
             }
         }
     break;
+
     case 'd': // Move RIGHT
         for (int i = 0; i < BSIZE; ++i) { // Parse board from top to bottom
             for (int j = BSIZE - 1; j >= 0; --j) { // Parse board from right to left
@@ -116,6 +117,7 @@ bool Game::combine(char& input, bool& valid_step) {
             }
         }
     break;
+
     case 's': // Move DOWN
         for (int j = 0; j < BSIZE; ++j) { // Parse board from left to right
             for (int i = BSIZE - 1; i >= 1; --i) { // Parse board from bottom to top
@@ -128,6 +130,7 @@ bool Game::combine(char& input, bool& valid_step) {
             }
         }
     break;
+
     case 'a': // Move LEFT
         for (int i = 0; i < BSIZE; ++i) { // Parse board from top to bottom
             for (int j = 0; j < BSIZE - 1; ++j) { // Parse board from left to right
@@ -140,6 +143,7 @@ bool Game::combine(char& input, bool& valid_step) {
             }
         }
     break;
+
     case 'd': // Move RIGHT
         for (int i = 0; i < BSIZE; ++i) { // Parse board from top to bottom
             for (int j = BSIZE - 1; j >= 1; --j) { // Parse board from right to left
@@ -152,21 +156,22 @@ bool Game::combine(char& input, bool& valid_step) {
             }
         }
     break;
-    default: cout << "Wrong input ('w', 'a', 's' or 'd' only)" << endl
-                  << "To exit input '.'" << endl
-                  << "Try again: " << endl << endl;
+    
+    default: std::cout << "Wrong input ('w', 'a', 's' or 'd' only)" << std::endl
+                  << "To exit input '.'" << std::endl
+                  << "Try again: " << std::endl << std::endl;
     }
 
     return valid_step;
 }
 
 void Game::add_new_tile() {
-    vector<pair<int, int>> empty_tiles; // list of empty tiles
+    std::vector<std::pair<int, int>> empty_tiles; // list of empty tiles
 
     for (int i = 0; i < Game::BSIZE; ++i) {
         for (int j = 0; j < Game::BSIZE; ++j) {
             if (board[i][j] == 0) {
-                pair<int, int> position(i, j);
+                std::pair<int, int> position(i, j);
                 empty_tiles.push_back(position);
             }
         }
@@ -199,25 +204,25 @@ int Game::get_score() {
     return score;
 }
 
-ostream & operator<<(ostream & out, const Game & game) {
-    out << " +===========================+" << endl;
+std::ostream & operator<<(std::ostream & out, const Game & game) {
+    out << " +===========================+" << std::endl;
 
     for (int i = 0; i < Game::BSIZE; ++i) {
         for (int j = 0; j < Game::BSIZE; ++j) {
             // setw(4) limits only to 4 digit numbers - theoretical game limit is much higher,
             // but here I assume most of the games played wouldn't be more than 4 digits
-            out << " | " << setw(4) << game.board[i][j];
+            out << " | " << std::setw(4) << game.board[i][j];
         }
 
-        out << " |" << endl;
+        out << " |" << std::endl;
         
         if (i < Game::BSIZE - 1) {
-            out << " -----------------------------" << endl;
+            out << " -----------------------------" << std::endl;
         }
     }
     
-    out << " +===========================+" << endl;
-    out << "Score: " << game.score << endl << endl;
+    out << " +===========================+" << std::endl;
+    out << "Score: " << game.score << std::endl << std::endl;
     out << "Turn " << game.turn << ": ";
     
     return out;
