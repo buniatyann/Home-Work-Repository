@@ -36,7 +36,8 @@ long minimumPasses(long m, long w, long p, long n) {
         if (m > w) {
             m = std::max(m, half);
             w = total - m;
-        } else {
+        } 
+        else {
             w = std::max(w, half);
             m = total - w;
         }
