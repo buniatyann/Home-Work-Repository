@@ -1,7 +1,8 @@
-#pragma once
+#ifndef VECTOR_H
+#define VECTOR_H
 
 #include <iostream>
-#include "explore/explore_raw_memory.h"
+#include "raw_memory.h"
 
 
 template <typename T>
@@ -92,57 +93,4 @@ private:
     void ReplaceElementsInMemory(iterator old_memory, iterator new_memory, size_t size);
 };
 
-// template <typename T>
-// class Vector {
-// public:
-//     using iterator = T*;
-//     using const_iterator = const T*;
-
-//     Vector() = default;
-//     Vector(size_t size);
-//     Vector(const Vector& other);
-//     Vector(Vector&& other) noexcept;
-//     ~Vector();
-
-//     Vector& operator=(const Vector& rhs);
-//     Vector& operator=(Vector&& rhs) noexcept;
-
-//     const T& operator[](size_t index) const noexcept;
-//     T& operator[](size_t index) noexcept;
-
-//     iterator begin() noexcept;
-//     iterator end() noexcept;
-//     const_iterator begin() const noexcept;
-//     const_iterator end() const noexcept;
-//     const_iterator cbegin() const noexcept;
-//     const_iterator cend() const noexcept;
-
-//     template <typename... Args>
-//     T& EmplaceBack(Args&&... args);
-
-//     template <typename... Args>
-//     iterator Emplace(const_iterator pos, Args&&... args);
-
-//     void PushBack(const T& value);
-//     void PushBack(T&& value);
-//     iterator Insert(const_iterator pos, const T& value);
-//     iterator Insert(const_iterator pos, T&& value);
-
-//     void PopBack() noexcept;
-//     iterator Erase(const_iterator pos) noexcept(std::is_nothrow_move_assignable_v<T>);
-
-//     void Swap(Vector& other) noexcept;
-
-//     size_t Size() const noexcept;
-//     size_t Capacity() const noexcept;
-//     void Reserve(size_t new_capacity);
-//     void Resize(size_t new_size);
-
-// private:
-//     RawMemory<T> data_;
-//     size_t size_ = 0;
-
-//     void ReplaceElementsInMemory(iterator old_memory, iterator new_memory, size_t size);
-// };
-
-
+#endif //VECTOR_H

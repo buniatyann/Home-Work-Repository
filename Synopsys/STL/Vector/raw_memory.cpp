@@ -1,8 +1,7 @@
-#include "explore_raw_memory.h" // Includes the header file defining the RawMemory class
+#include "raw_memory.h" // Includes the header file defining the RawMemory class
 
 template <typename T>
-RawMemory<T>::RawMemory(size_t capacity)
-        : buffer_(Allocate(capacity)), capacity_(capacity) {
+RawMemory<T>::RawMemory(size_t capacity): buffer_(Allocate(capacity)), capacity_(capacity) {
     // Constructor initializes the RawMemory object with the given capacity
     // Allocates memory for 'capacity' number of elements of type T
     // Initializes the capacity_ member with the provided capacity
@@ -28,6 +27,7 @@ RawMemory<T>& RawMemory<T>::operator=(RawMemory&& rhs) noexcept {
         Deallocate(rhs.buffer_);
         rhs.capacity_ = 0; // Ensure 'rhs' has no memory resources
     }
+
     return *this; // Return *this to allow chained assignments
 }
 
@@ -110,85 +110,3 @@ void RawMemory<T>::Deallocate(T* buf) noexcept {
     // Ensures that memory is properly released
     operator delete(buf);
 }
-// template <typename T>
-// RawMemory<T>::RawMemory(size_t capacity)
-//         : buffer_(Allocate(capacity)) , capacity_(capacity) {}
-
-// template <typename T>
-// RawMemory<T>::RawMemory(RawMemory&& other) noexcept {
-//     Swap(other);
-//     Deallocate(other.buffer_);
-//     other.capacity_ = 0;
-// }
-
-// template <typename T>
-// RawMemory<T>& RawMemory<T>::operator=(RawMemory&& rhs) noexcept {
-//     if (this != &rhs) {
-//         Swap(rhs);
-//         Deallocate(rhs.buffer_);
-//         rhs.capacity_ = 0;
-//     }
-//     return *this;
-// }
-
-// template <typename T>
-// RawMemory<T>::~RawMemory() {
-//     if (buffer_ != nullptr) {
-//         Deallocate(buffer_);
-//     }
-// }
-
-// template <typename T>
-// T* RawMemory<T>::operator+(size_t offset) noexcept {
-//     assert(offset <= capacity_);
-//     return buffer_ + offset;
-// }
-
-// template <typename T>
-// const T* RawMemory<T>::operator+(size_t offset) const noexcept {
-//     return const_cast<RawMemory&>(*this) + offset;
-// }
-
-// template <typename T>
-// const T& RawMemory<T>::operator[](size_t index) const noexcept {
-//     return const_cast<RawMemory&>(*this)[index];
-// }
-
-// template <typename T>
-// T& RawMemory<T>::operator[](size_t index) noexcept {
-//     assert(index < capacity_);
-//     return buffer_[index];
-// }
-
-// template <typename T>
-// void RawMemory<T>::Swap(RawMemory& other) noexcept {
-//     std::swap(buffer_, other.buffer_);
-//     std::swap(capacity_, other.capacity_);
-// }
-
-// template <typename T>
-// const T* RawMemory<T>::GetAddress() const noexcept {
-//     return buffer_;
-// }
-
-// template <typename T>
-// T* RawMemory<T>::GetAddress() noexcept {
-//     return buffer_;
-// }
-
-// template <typename T>
-// size_t RawMemory<T>::Capacity() const noexcept {
-//     return capacity_;
-// }
-
-// template <typename T>
-// T* RawMemory<T>::Allocate(size_t n) {
-//     return n != 0 ? static_cast<T*>(operator new(n * sizeof(T))) : nullptr;
-// }
-
-// template <typename T>
-// void RawMemory<T>::Deallocate(T* buf) noexcept {
-//     operator delete(buf);
-// }
-
-

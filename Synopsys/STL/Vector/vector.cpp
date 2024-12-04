@@ -1,4 +1,4 @@
-#include "explore/explore_vector_h.h" // Includes header for Vector class definition
+#include "vector.h" // Includes header for Vector class definition
 
 // Constructor that initializes the Vector with a given size
 template <typename T>
@@ -35,12 +35,14 @@ Vector<T>& Vector<T>::operator=(const Vector& rhs) {
         if (rhs.size_ > data_.Capacity()) { // If rhs is larger than current capacity
             Vector rhs_copy(rhs); // Create a copy of rhs
             Swap(rhs_copy); // Swap contents with the copied Vector
-        } else {
+        } 
+        else {
             if (size_ > rhs.size_) { // If current size is larger than rhs size
                 // Copy elements from rhs and destroy extra elements
                 std::copy(rhs.begin(), rhs.end(), begin());
                 std::destroy_n(begin() + rhs.size_, size_ - rhs.size_);
-            } else {
+            } 
+            else {
                 // Copy existing elements from rhs and add new elements
                 std::copy(rhs.begin(), rhs.data_ + size_, begin());
                 std::uninitialized_copy_n(rhs.data_ + size_, rhs.size_ - size_, data_ + size_);
@@ -57,6 +59,7 @@ Vector<T>& Vector<T>::operator=(Vector&& rhs) noexcept {
     if (this != &rhs) { // Self-assignment check
         Swap(rhs); // Swap contents with rhs
     }
+
     return *this;
 }
 
@@ -71,29 +74,42 @@ const T& Vector<T>::operator[](size_t index) const noexcept {
 template<typename T>
 T& Vector<T>::operator[](size_t index) noexcept {
     assert(index < size_); // Ensure index is within bounds
+    
     return data_[index];
 }
 
 // Iterator functions: Provide access to the beginning and end of the Vector
 template<typename T>
-typename Vector<T>::iterator Vector<T>::begin() noexcept { return data_.GetAddress(); }
+typename Vector<T>::iterator Vector<T>::begin() noexcept { 
+    return data_.GetAddress(); 
+}
 
 template<typename T>
-typename Vector<T>::iterator Vector<T>::end() noexcept { return data_ + size_; }
+typename Vector<T>::iterator Vector<T>::end() noexcept { 
+    return data_ + size_; 
+}
 
 // Const iterator functions: Provide const access to the beginning and end
 template<typename T>
-typename Vector<T>::const_iterator Vector<T>::begin() const noexcept { return cbegin(); }
+typename Vector<T>::const_iterator Vector<T>::begin() const noexcept { 
+    return cbegin(); 
+}
 
 template<typename T>
-typename Vector<T>::const_iterator Vector<T>::end() const noexcept { return cend(); }
+typename Vector<T>::const_iterator Vector<T>::end() const noexcept { 
+    return cend(); 
+}
 
 // Const iterator functions for range-based access
 template<typename T>
-typename Vector<T>::const_iterator Vector<T>::cbegin() const noexcept { return data_.GetAddress(); }
+typename Vector<T>::const_iterator Vector<T>::cbegin() const noexcept { 
+    return data_.GetAddress(); 
+}
 
 template<typename T>
-typename Vector<T>::const_iterator Vector<T>::cend() const noexcept { return data_ + size_; }
+typename Vector<T>::const_iterator Vector<T>::cend() const noexcept { 
+    return data_ + size_; 
+}
 
 // EmplaceBack: Constructs an element in place at the end of the Vector
 template<typename T>
@@ -102,7 +118,8 @@ T &Vector<T>::EmplaceBack(Args&&... args) {
     if (size_ < data_.Capacity()) { // Check if there's enough capacity
         // Construct element in place at the end
         new (data_ + size_) T{std::forward<Args>(args)...};
-    } else {
+    } 
+    else {
         // Allocate new memory with double the current capacity
         RawMemory<T> new_data{size_ == 0 ? 1 : size_ * 2};
         new (new_data + size_) T{std::forward<Args>(args)...};
@@ -110,6 +127,7 @@ T &Vector<T>::EmplaceBack(Args&&... args) {
         ReplaceElementsInMemory(data_.GetAddress(), new_data.GetAddress(), size_);
         data_.Swap(new_data); // Swap old and new memory
     }
+    
     size_++; // Update size
     return data_[size_ - 1]; // Return reference to the newly added element
 }
@@ -125,27 +143,31 @@ typename Vector<T>::iterator Vector<T>::Emplace(const_iterator pos, Args&&... ar
         new (end()) T{std::move(data_[size_ - 1])}; // Move the last element to the end
         std::move_backward(data_ + position_index, end() - 1, end()); // Shift elements to make room
         data_[position_index] = std::move(tmp); // Insert new element
-    } else {
+    } 
+    else {
         // Allocate new memory with double the current capacity
         RawMemory<T> new_data{size_ == 0 ? 1 : size_ * 2};
         new (new_data + position_index) T{std::forward<Args>(args)...};
         try {
             // Move elements before the position
             ReplaceElementsInMemory(begin(), new_data.GetAddress(), position_index);
-        } catch (...) {
+        } 
+        catch (...) {
             std::destroy_at(new_data + position_index); // Clean up on exception
             throw;
         }
         try {
             // Move elements after the position
             ReplaceElementsInMemory(begin() + position_index, new_data.GetAddress() + position_index + 1, size_ - position_index);
-        } catch (...) {
+        }
+        catch (...) {
             std::destroy_n(begin(), position_index + 1); // Clean up on exception
             throw;
         }
         data_.Swap(new_data); // Swap old and new memory
     }
     size_++; // Update size
+
     return data_ + position_index; // Return iterator to the newly inserted element
 }
 
@@ -227,7 +249,8 @@ void Vector<T>::Resize(size_t new_size) {
     if (new_size > size_) { // If increasing size
         Reserve(new_size); // Ensure enough capacity
         std::uninitialized_value_construct_n(begin() + size_, new_size - size_); // Construct new elements
-    } else if (new_size < size_) { // If decreasing size
+    } 
+    else if (new_size < size_) { // If decreasing size
         std::destroy_n(begin() + new_size, size_ - new_size); // Destroy extra elements
     }
     size_ = new_size; // Update size
@@ -239,216 +262,11 @@ void Vector<T>::ReplaceElementsInMemory(iterator old_memory, iterator new_memory
     if constexpr (std::is_nothrow_move_constructible_v<T> || !std::is_copy_constructible_v<T>) {
         // Use move construction if possible or if copying is not available
         std::uninitialized_move_n(old_memory, size, new_memory);
-    } else {
+    } 
+    else {
         // Otherwise, use copy construction
         std::uninitialized_copy_n(old_memory, size, new_memory);
     }
     std::destroy_n(old_memory, size); // Destroy old elements
 }
 
-
-// template <typename T>
-// Vector<T>::Vector(size_t size) : data_(size), size_(size) {
-//     std::uninitialized_value_construct_n(begin(), size);
-// }
-
-// template<typename T>
-// Vector<T>::Vector(const Vector& other) : data_(other.size_) , size_(other.size_) {
-//     std::uninitialized_copy_n(other.begin(), size_, begin());
-// }
-
-// template<typename T>
-// Vector<T>::Vector(Vector&& other) noexcept {
-//     Swap(other);
-// }
-
-// template<typename T>
-// Vector<T>::~Vector() {
-//     std::destroy_n(begin(), size_);
-// }
-
-// template<typename T>
-// Vector<T>& Vector<T>::operator=(const Vector& rhs) {
-//     if (this != &rhs) {
-//         if (rhs.size_ > data_.Capacity()) {
-//             Vector rhs_copy(rhs);
-//             Swap(rhs_copy);
-//         } else {
-//             if (size_ > rhs.size_) {
-//                 std::copy(rhs.begin(), rhs.end(), begin());
-//                 std::destroy_n(begin() + rhs.size_, size_ - rhs.size_);
-//             } else {
-//                 std::copy(rhs.begin(), rhs.data_ + size_, begin());
-//                 std::uninitialized_copy_n(rhs.data_ + size_, rhs.size_ - size_, data_ + size_);
-//             }
-//             size_ = rhs.size_;
-//         }
-//     }
-//     return *this;
-// }
-
-// template<typename T>
-// Vector<T>& Vector<T>::operator=(Vector&& rhs) noexcept {
-//     if (this != &rhs) {
-//         Swap(rhs);
-//     }
-//     return *this;
-// }
-
-// template<typename T>
-// const T& Vector<T>::operator[](size_t index) const noexcept {
-//     return const_cast<Vector&>(*this)[index];
-// }
-
-// template<typename T>
-// T& Vector<T>::operator[](size_t index) noexcept {
-//     assert(index < size_);
-//     return data_[index];
-// }
-
-// template<typename T>
-// typename Vector<T>::iterator Vector<T>::begin() noexcept { return data_.GetAddress(); }
-
-// template<typename T>
-// typename Vector<T>::iterator Vector<T>::end() noexcept { return data_ + size_; }
-
-// template<typename T>
-// typename Vector<T>::const_iterator Vector<T>::begin() const noexcept { return cbegin(); }
-
-// template<typename T>
-// typename Vector<T>::const_iterator Vector<T>::end() const noexcept { return cend(); }
-
-// template<typename T>
-// typename Vector<T>::const_iterator Vector<T>::cbegin() const noexcept { return data_.GetAddress(); }
-
-// template<typename T>
-// typename Vector<T>::const_iterator Vector<T>::cend() const noexcept { return data_ + size_; }
-
-// template<typename T>
-// template<typename... Args>
-// T &Vector<T>::EmplaceBack(Args&&... args) {
-//     if (size_ < data_.Capacity()) {
-//         new (data_ + size_) T{std::forward<Args>(args)...};
-//     } else {
-//         RawMemory<T> new_data{size_ == 0 ? 1 : size_ * 2};
-//         new (new_data + size_) T{std::forward<Args>(args)...};
-//         ReplaceElementsInMemory(data_.GetAddress(), new_data.GetAddress(), size_);
-//         data_.Swap(new_data);
-//     }
-//     size_++;
-//     return data_[size_ - 1];
-// }
-
-// template<typename T>
-// template<typename... Args>
-// typename Vector<T>::iterator Vector<T>::Emplace(const_iterator pos, Args&&... args) {
-//     size_t position_index = std::distance(cbegin(), pos);
-//     if (size_ < data_.Capacity()) {
-//         if (pos == end()) return &EmplaceBack(std::forward<Args>(args)...);
-//         T tmp{std::forward<Args>(args)...};
-//         new (end()) T{std::move(data_[size_ - 1])};
-//         std::move_backward(data_ + position_index, end() - 1, end());
-//         data_[position_index] = std::move(tmp);
-//     } else {
-//         RawMemory<T> new_data{size_ == 0 ? 1 : size_ * 2};
-//         new (new_data + position_index) T{std::forward<Args>(args)...};
-//         try {
-//             ReplaceElementsInMemory(begin(), new_data.GetAddress(), position_index);
-//         } catch (...) {
-//             std::destroy_at(new_data + position_index);
-//             throw;
-//         }
-//         try {
-//             ReplaceElementsInMemory(begin() + position_index, new_data.GetAddress() + position_index + 1, size_ - position_index);
-//         } catch (...) {
-//             std::destroy_n(begin(), position_index + 1);
-//             throw;
-//         }
-//         data_.Swap(new_data);
-//     }
-//     size_++;
-//     return data_ + position_index;
-// }
-
-// template<typename T>
-// void Vector<T>::PushBack(const T& value) {
-//     EmplaceBack(value);
-// }
-
-// template<typename T>
-// void Vector<T>::PushBack(T&& value) {
-//     EmplaceBack(std::move(value));
-// }
-
-// template<typename T>
-// typename Vector<T>::iterator Vector<T>::Insert(const_iterator pos, const T& value) {
-//     return Emplace(pos, value);
-// }
-
-// template<typename T>
-// typename Vector<T>::iterator Vector<T>::Insert(const_iterator pos, T&& value) {
-//     return Emplace(pos, std::move(value));
-// }
-
-// template<typename T>
-// void Vector<T>::PopBack() noexcept {
-//     std::destroy_at(end() - 1);
-//     size_--;
-// }
-
-// template<typename T>
-// typename Vector<T>::iterator Vector<T>::Erase(const_iterator pos) noexcept(std::is_nothrow_move_assignable_v<T>) {
-//     if (pos == cend()) {
-//         PopBack();
-//         return end();
-//     }
-//     size_t position_index = std::distance(cbegin(), pos);
-//     std::move(data_ + position_index + 1, end(), data_ + position_index);
-//     PopBack();
-//     return data_ + position_index;
-// }
-
-// template<typename T>
-// void Vector<T>::Swap(Vector& other) noexcept {
-//     std::swap(size_, other.size_);
-//     std::swap(data_, other.data_);
-// }
-
-// template<typename T>
-// size_t Vector<T>::Size() const noexcept {
-//     return size_;
-// }
-
-// template<typename T>
-// size_t Vector<T>::Capacity() const noexcept {
-//     return data_.Capacity();
-// }
-
-// template<typename T>
-// void Vector<T>::Reserve(size_t new_capacity) {
-//     if (new_capacity <= data_.Capacity()) return;
-//     RawMemory<T> new_data{new_capacity};
-//     ReplaceElementsInMemory(begin(), new_data.GetAddress(), size_);
-//     data_.Swap(new_data);
-// }
-
-// template<typename T>
-// void Vector<T>::Resize(size_t new_size) {
-//     if (new_size > size_) {
-//         Reserve(new_size);
-//         std::uninitialized_value_construct_n(begin() + size_, new_size - size_);
-//     } else if (new_size < size_) {
-//         std::destroy_n(begin() + new_size, size_ - new_size);
-//     }
-//     size_ = new_size;
-// }
-
-// template<typename T>
-// void Vector<T>::ReplaceElementsInMemory(iterator old_memory, iterator new_memory, size_t size) {
-//     if constexpr (std::is_nothrow_move_constructible_v<T> || !std::is_copy_constructible_v<T>) {
-//         std::uninitialized_move_n(old_memory, size, new_memory);
-//     } else {
-//         std::uninitialized_copy_n(old_memory, size, new_memory);
-//     }
-//     std::destroy_n(old_memory, size);
-// }

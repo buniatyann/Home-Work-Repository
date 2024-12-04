@@ -51,7 +51,7 @@ public:
 private:
     char* str_data;
     int size;
-    int capacity;
+    int m_capacity;
 
 private:
     void _set_capacity(int);
