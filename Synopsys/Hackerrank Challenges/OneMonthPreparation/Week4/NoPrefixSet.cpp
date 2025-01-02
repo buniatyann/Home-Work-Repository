@@ -12,11 +12,11 @@ private:
     public:
         Node* children[LETTER_SIZE]; // Array of pointers to child nodes (one for each letter)
         char key;                    // The character that this node represents
-        int wordCount;               // Number of words that pass through this node or end at this node
-        int prefixCount;             // Number of words that pass through this node
+        int word_count;               // Number of words that pass through this node or end at this node
+        int prefix_count;             // Number of words that pass through this node
 
         // Constructor to initialize the node with a given character
-        Node(char key) : key(key), wordCount(0), prefixCount(0) {
+        Node(char key) : key(key), word_count(0), prefix_count(0) {
             // Initialize all child pointers to null
             for (int i = 0; i < LETTER_SIZE; ++i) {
                 children[i] = nullptr;
@@ -59,17 +59,17 @@ public:
 
     // Private method to insert a word starting from a given parent node
     bool insert(const std::string& word, Node* parent) {
-        parent->prefixCount++; // Increment the count of prefixes passing through the node
+        parent->prefix_count++; // Increment the count of prefixes passing through the node
         // If the word is already present, return false (cannot insert prefix of an existing word)
-        if (word.length() > 0 && parent->wordCount > 0) {
+        if (word.length() > 0 && parent->word_count > 0) {
             return false;
         }
         // If we reach the end of the word, mark it as a complete word in the Trie
         if (word.empty()) {
-            if (parent->prefixCount > 1) {
+            if (parent->prefix_count > 1) {
                 return false; // If the current node has multiple prefixes, it's a bad set
             }
-            parent->wordCount++; // Increment the count of complete words at this node
+            parent->word_count++; // Increment the count of complete words at this node
             return true;
         }
 
