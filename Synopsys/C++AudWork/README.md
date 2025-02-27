@@ -71,4 +71,6 @@ This is a utility function that creates a `SharedPtr` in a more efficient way by
 #### **`make_shared<T>(Args&&... args)`**
 Creates and returns a `SharedPtr` managing an object of type `T` constructed with the given arguments `args...`.
 
-Team members: Buniatyan Narek and Stepanyan Zemfira
+Team members:
+- Buniatyan Narek
+- Stepanyan Zemfira
