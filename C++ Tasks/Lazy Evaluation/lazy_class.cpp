@@ -80,7 +80,9 @@ std::vector<T> VectorPairOps<T>::container_of_max() const {
     std::vector<T> result;
     result.reserve(left_.size());
     std::transform(left_.begin(), left_.end(), right_.begin(), std::back_inserter(result), 
-                   [](const T& a, const T& b) { return std::max(a, b); });
+                   [](const T& a, const T& b) { 
+                       return std::max(a, b); 
+                   });
     
     return result;
 }
