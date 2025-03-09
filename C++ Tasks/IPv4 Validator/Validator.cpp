@@ -3,69 +3,76 @@
 #include <bitset>
 #include <string_view>
 #include <sstream>
-#include "test.hpp"
+#include <stdexcept>
 
-u_int32_t ipToInt(std::string_view str) {
-    u_int32_t ans = 0;
+constexpr uint32_t MAX_IPV4 = 4294967296ULL; // 2^32
+
+uint32_t ipToInt(std::string_view str) {
+    uint32_t ans = 0;
     size_t start = 0;
-    u_int32_t shift = 24;
+    int octet_count = 0;
 
-    for (size_t i = 0; i < 4; ++i) {
+    for (int shift = 24; shift >= 0; shift -= 8) {
         size_t end = str.find('.', start);
         if (end == std::string_view::npos) {
-            end = str.length();  // Last part of the IP
+            end = str.length();
+        }
+        
+        if (start >= end) {
+            throw std::invalid_argument("Invalid IP format");
         }
 
-        // Parse the byte part of the IP address
-        u_int32_t byte = std::stoi(std::string(str.substr(start, end - start)));
-        ans |= (byte << shift);  // Shift and OR to accumulate the result
-        shift -= 8;
+        std::string octet_str(str.substr(start, end - start));
+        std::size_t pos;
+        int byte = std::stoi(octet_str, &pos);
+        if (pos != octet_str.length() || byte < 0 || byte > 255) {
+            throw std::out_of_range("IP octet out of range or malformed");
+        }
+        
+        ans |= (static_cast<uint32_t>(byte) << shift);
         start = end + 1;
+        octet_count++;
     }
 
+    if (octet_count != 4 || start <= str.length()) {
+        throw std::invalid_argument("IP must have exactly 4 octets");
+    }
+    
     return ans;
 }
 
-u_int32_t find(const std::string& name) {
+uint32_t find(const std::string& name) {
     std::ifstream iff(name);
-    u_int32_t size;
-    std::bitset<255255255256> bits;
-
     if (!iff) {
-        std::cerr << "Cannot open the file" << std::endl;
-        return 1;
+        std::cerr << "Cannot open the file: " << name << std::endl;
+        return UINT32_MAX; // Error indicator
     }
 
-    iff >> size;  // Read the number of IPs
-    std::string Ip;
-    for (u_int32_t i = 0; i < size; ++i) {
-        iff >> Ip;
-        std::string_view ipView(Ip);  // Use string_view to avoid copying the string
-        u_int32_t ipInt = ipToInt(ipView);
-        bits.set(ipInt);  // Set the bit corresponding to this IP
+    uint32_t size;
+    iff >> size;
+    if (!iff) {
+        std::cerr << "Failed to read size from file" << std::endl;
+        return UINT32_MAX;
     }
 
-    return static_cast<u_int32_t>(bits.count());  // Count the set bits (unique IPs)
+    // Use a smaller bitset or alternative (e.g., std::unordered_set) for practicality
+    std::bitset<MAX_IPV4> bits; // Note: This is still ~4GB, consider std::unordered_set
+    std::string ip;
+    for (uint32_t i = 0; i < size && iff >> ip; ++i) {
+        try {
+            uint32_t ipInt = ipToInt(ip);
+            bits.set(ipInt);
+        } 
+        catch (const std::exception& e) {
+            std::cerr << "Invalid IP '" << ip << "': " << e.what() << std::endl;
+            return UINT32_MAX;
+        }
+    }
+
+    if (iff.fail() && !iff.eof()) {
+        std::cerr << "Error reading IPs from file" << std::endl;
+        return UINT32_MAX;
+    }
+
+    return static_cast<uint32_t>(bits.count());
 }
-
-
-int main() {
-    u_int32_t numIPs;
-    std::cout << "Enter the number of IP addresses to generate: ";
-    std::cin >> numIPs;
-
-    // Ask the user for the filename to save the generated IPs
-    std::string filename;
-    std::cout << "Enter the filename to save the IP addresses: ";
-    std::cin >> filename;
-
-    // Generate and save the IP addresses to the file
-    createTestFile(numIPs, filename);
-
-    std::cout << "Test file '" << filename << "' has been created with " << numIPs << " IP addresses." << std::endl;
-    find(filename);
-
-    
-    return 0;
-}
-
