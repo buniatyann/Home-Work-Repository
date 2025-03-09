@@ -55,8 +55,7 @@ uint32_t find(const std::string& name) {
         return UINT32_MAX;
     }
 
-    // Use a smaller bitset or alternative (e.g., std::unordered_set) for practicality
-    std::bitset<MAX_IPV4> bits; // Note: This is still ~4GB, consider std::unordered_set
+    std::bitset<MAX_IPV4> bits; 
     std::string ip;
     for (uint32_t i = 0; i < size && iff >> ip; ++i) {
         try {
