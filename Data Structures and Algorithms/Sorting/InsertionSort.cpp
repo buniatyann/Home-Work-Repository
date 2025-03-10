@@ -3,6 +3,16 @@
 #include <functional>
 #include <iterator>
 
+/*
+    Time Complexity of Insertion Sort
+        Random Access Iterator: O(n ^ 2)
+        Bidirectional Iterator: O(n ^ 2)
+    
+    Space Complexity of Insertion Sort
+        Random Access Iterator: O(1)
+        Bidirectional Iterator: O(1)
+*/
+
 template <typename T>
 void insertion_sort(std::vector<T>& vec){
     for (std::size_t i = 1; i < vec.size(); ++i) {
