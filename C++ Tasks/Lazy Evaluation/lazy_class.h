@@ -62,8 +62,8 @@ public:
     iterator end() const;
 
 private:
-    std::vector<T> left_;
-    std::vector<T> right_;
+    const std::vector<T> left_;
+    const std::vector<T> right_;
 };
 
 // Template methods need to be defined in the header
