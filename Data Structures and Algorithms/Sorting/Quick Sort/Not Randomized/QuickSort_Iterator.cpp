@@ -2,7 +2,7 @@
 #include <iterator>
 
 template <typename Iter_, typename Comp = std::less<typename std::iterator_traits<Iter_>::value_type>>
-Iter_ quick_partition(Iter_ low, Iter_ high, Comp comp = Comp()) { // 🔹 Renamed to quick_partition
+Iter_ quick_partition(Iter_ low, Iter_ high, Comp comp = Comp()) {
     using value_type = typename std::iterator_traits<Iter_>::value_type;
     value_type pivot = *std::prev(high);  
     Iter_ i = low;            
@@ -18,6 +18,14 @@ Iter_ quick_partition(Iter_ low, Iter_ high, Comp comp = Comp()) { // 🔹 Renam
     return i;                  
 }
 
+/*
+    Time Complexity:
+        Best and Average Case: O(n * log(n))
+        Worst Case: O(n ^ 2)
+    Space Complexity:
+        Best and Average Case: O(log(n))
+        Worst Case: O(n)
+*/
 template <typename Iter_, typename Comp = std::less<typename std::iterator_traits<Iter_>::value_type>>
 void quick_sort(Iter_ begin, Iter_ end, Comp comp = Comp()) {
     if (std::distance(begin, end) > 1) {
