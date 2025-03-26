@@ -18,6 +18,14 @@ std::size_t partition(std::vector<T>& arr, std::size_t low, std::size_t high, Co
     return (i + 1);
 }
 
+/*
+    Time Complexity:
+        Best and Average Case: O(n * log(n))
+        Worst Case: O(n ^ 2)
+    Space Complexity:
+        Best and Average Case: O(log(n))
+        Worst Case: O(n)
+*/
 template <typename T, typename Comp = std::greater<T>>
 void quick_sort(std::vector<T>& arr, std::size_t low, std::size_t high, Comp comp = Comp()) {
     if (low < high) {
