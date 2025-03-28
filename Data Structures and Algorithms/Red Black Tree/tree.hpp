@@ -1,3 +1,8 @@
+#ifndef TREE_HPP
+#define TREE_HPP
+
+#include <utility>
+
 template <typename T>
 class RedBlackTree {
 public:
@@ -31,3 +36,5 @@ private:
     void transplant(Node*& root, Node*& u, Node*& v);
     void delete_tree(Node* node);
 };
+
+#endif // TREE_HPP
