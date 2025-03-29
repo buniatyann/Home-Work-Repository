@@ -532,11 +532,13 @@ void Set<T, Compare, Alloc>::fix_delete(Node<T>* node) {
                 rotate_left(node->parent);
                 sibling = node->parent->right;
             }
+            
             if ((!sibling->left || sibling->left->color == COLOR::BLACK) &&
                 (!sibling->right || sibling->right->color == COLOR::BLACK)) {
                 sibling->color = COLOR::RED;
                 node = node->parent;
-            } else {
+            } 
+            else {
                 if (!sibling->right || sibling->right->color == COLOR::BLACK) {
                     if (sibling->left){
                         sibling->left->color = COLOR::BLACK;
@@ -556,7 +558,8 @@ void Set<T, Compare, Alloc>::fix_delete(Node<T>* node) {
                 rotate_left(node->parent);
                 node = root_;
             }
-        } else {
+        } 
+        else {
             Node<T>* sibling = node->parent->left;
             if (sibling->color == COLOR::RED) {
                 sibling->color = COLOR::BLACK;
@@ -568,7 +571,8 @@ void Set<T, Compare, Alloc>::fix_delete(Node<T>* node) {
                 (!sibling->right || sibling->right->color == COLOR::BLACK)) {
                 sibling->color = COLOR::RED;
                 node = node->parent;
-            } else {
+            } 
+            else {
                 if (!sibling->left || sibling->left->color == COLOR::BLACK) {
                     if (sibling->right){
                         sibling->right->color = COLOR::BLACK;
