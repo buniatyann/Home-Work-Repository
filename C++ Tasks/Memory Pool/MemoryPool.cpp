@@ -117,6 +117,11 @@ void memory_pool<T, Alloc>::print_stats() const {
 }
 
 template <typename T, typename Alloc>
+bool memory_pool<T, Alloc>::block_node_t::operator==(const block_node_t &rhs) const {
+    return this->block_ptr == rhs.block_ptr && this->block_size == rhs.block_size;
+}
+
+template <typename T, typename Alloc>
 typename memory_pool<T, Alloc>::block_node_t memory_pool<T, Alloc>::find_suitable_node(size_type required_size) {
     for (const auto& block_node : free_blocks_) {
         if (block_node.block_size >= required_size) {
