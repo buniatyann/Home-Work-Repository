@@ -48,7 +48,8 @@ typename memory_pool<T, Alloc>::pointer memory_pool<T, Alloc>::allocate(size_typ
         expand_pool(1, block_size);
         block_node = free_blocks_.back();
         free_blocks_.pop_back();
-    } else {
+    } 
+    else {
         free_blocks_.erase(std::remove(free_blocks_.begin(), free_blocks_.end(), block_node), free_blocks_.end());
     }
 
@@ -121,6 +122,7 @@ typename memory_pool<T, Alloc>::block_node_t memory_pool<T, Alloc>::find_suitabl
             return block_node;
         }
     }
+    
     return {nullptr, 0};
 }
 
