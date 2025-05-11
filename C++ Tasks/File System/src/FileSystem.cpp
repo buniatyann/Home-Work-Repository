@@ -47,7 +47,7 @@ bool FileSystem::touch(const std::string& file) {
         fs::path path_obj = cwd / file;
         if (fs::exists(path_obj)) {
             fs::last_write_time(path_obj, fs::file_time_type::clock::now());
-            std::cout << "Updated timestamp: '" << path_obj << "'\n";
+            // std::cout << "Updated timestamp: '" << path_obj << "'\n";
             return true;
         }
 
@@ -286,7 +286,7 @@ bool FileSystem::ln(const std::string& target, const std::string& link) {
         }
 
         fs::create_symlink(target_path, link_path);
-        std::cout << "Created symlink: '" << link_path << "' -> '" << target_path << "'\n";
+        // std::cout << "Created symlink: '" << link_path << "' -> '" << target_path << "'\n";
         
         return true;
     } catch (const fs::filesystem_error& e) {
