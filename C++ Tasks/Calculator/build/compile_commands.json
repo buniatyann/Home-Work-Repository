@@ -1,0 +1,62 @@
+[
+{
+  "directory": "/home/narr/Desktop/IpHomeWork/Calculator/build",
+  "command": "/usr/bin/g++  -I/home/narr/Desktop/IpHomeWork/Calculator/include  -fPIE -g -std=gnu++17 -o CMakeFiles/calculator.dir/src/ast/expression_node.cpp.o -c /home/narr/Desktop/IpHomeWork/Calculator/src/ast/expression_node.cpp",
+  "file": "/home/narr/Desktop/IpHomeWork/Calculator/src/ast/expression_node.cpp",
+  "output": "CMakeFiles/calculator.dir/src/ast/expression_node.cpp.o"
+},
+{
+  "directory": "/home/narr/Desktop/IpHomeWork/Calculator/build",
+  "command": "/usr/bin/g++  -I/home/narr/Desktop/IpHomeWork/Calculator/include  -fPIE -g -std=gnu++17 -o CMakeFiles/calculator.dir/src/ast/number_node.cpp.o -c /home/narr/Desktop/IpHomeWork/Calculator/src/ast/number_node.cpp",
+  "file": "/home/narr/Desktop/IpHomeWork/Calculator/src/ast/number_node.cpp",
+  "output": "CMakeFiles/calculator.dir/src/ast/number_node.cpp.o"
+},
+{
+  "directory": "/home/narr/Desktop/IpHomeWork/Calculator/build",
+  "command": "/usr/bin/g++  -I/home/narr/Desktop/IpHomeWork/Calculator/include  -fPIE -g -std=gnu++17 -o CMakeFiles/calculator.dir/src/ast/operator_node.cpp.o -c /home/narr/Desktop/IpHomeWork/Calculator/src/ast/operator_node.cpp",
+  "file": "/home/narr/Desktop/IpHomeWork/Calculator/src/ast/operator_node.cpp",
+  "output": "CMakeFiles/calculator.dir/src/ast/operator_node.cpp.o"
+},
+{
+  "directory": "/home/narr/Desktop/IpHomeWork/Calculator/build",
+  "command": "/usr/bin/g++  -I/home/narr/Desktop/IpHomeWork/Calculator/include  -fPIE -g -std=gnu++17 -o CMakeFiles/calculator.dir/src/ast/function_node.cpp.o -c /home/narr/Desktop/IpHomeWork/Calculator/src/ast/function_node.cpp",
+  "file": "/home/narr/Desktop/IpHomeWork/Calculator/src/ast/function_node.cpp",
+  "output": "CMakeFiles/calculator.dir/src/ast/function_node.cpp.o"
+},
+{
+  "directory": "/home/narr/Desktop/IpHomeWork/Calculator/build",
+  "command": "/usr/bin/g++  -I/home/narr/Desktop/IpHomeWork/Calculator/include  -fPIE -g -std=gnu++17 -o CMakeFiles/calculator.dir/src/lexer/token.cpp.o -c /home/narr/Desktop/IpHomeWork/Calculator/src/lexer/token.cpp",
+  "file": "/home/narr/Desktop/IpHomeWork/Calculator/src/lexer/token.cpp",
+  "output": "CMakeFiles/calculator.dir/src/lexer/token.cpp.o"
+},
+{
+  "directory": "/home/narr/Desktop/IpHomeWork/Calculator/build",
+  "command": "/usr/bin/g++  -I/home/narr/Desktop/IpHomeWork/Calculator/include  -fPIE -g -std=gnu++17 -o CMakeFiles/calculator.dir/src/lexer/lexer.cpp.o -c /home/narr/Desktop/IpHomeWork/Calculator/src/lexer/lexer.cpp",
+  "file": "/home/narr/Desktop/IpHomeWork/Calculator/src/lexer/lexer.cpp",
+  "output": "CMakeFiles/calculator.dir/src/lexer/lexer.cpp.o"
+},
+{
+  "directory": "/home/narr/Desktop/IpHomeWork/Calculator/build",
+  "command": "/usr/bin/g++  -I/home/narr/Desktop/IpHomeWork/Calculator/include  -fPIE -g -std=gnu++17 -o CMakeFiles/calculator.dir/src/parser/parser.cpp.o -c /home/narr/Desktop/IpHomeWork/Calculator/src/parser/parser.cpp",
+  "file": "/home/narr/Desktop/IpHomeWork/Calculator/src/parser/parser.cpp",
+  "output": "CMakeFiles/calculator.dir/src/parser/parser.cpp.o"
+},
+{
+  "directory": "/home/narr/Desktop/IpHomeWork/Calculator/build",
+  "command": "/usr/bin/g++  -I/home/narr/Desktop/IpHomeWork/Calculator/include  -fPIE -g -std=gnu++17 -o CMakeFiles/calculator.dir/src/calculator_error.cpp.o -c /home/narr/Desktop/IpHomeWork/Calculator/src/calculator_error.cpp",
+  "file": "/home/narr/Desktop/IpHomeWork/Calculator/src/calculator_error.cpp",
+  "output": "CMakeFiles/calculator.dir/src/calculator_error.cpp.o"
+},
+{
+  "directory": "/home/narr/Desktop/IpHomeWork/Calculator/build",
+  "command": "/usr/bin/g++  -I/home/narr/Desktop/IpHomeWork/Calculator/include  -fPIE -g -std=gnu++17 -o CMakeFiles/calculator.dir/src/calculator.cpp.o -c /home/narr/Desktop/IpHomeWork/Calculator/src/calculator.cpp",
+  "file": "/home/narr/Desktop/IpHomeWork/Calculator/src/calculator.cpp",
+  "output": "CMakeFiles/calculator.dir/src/calculator.cpp.o"
+},
+{
+  "directory": "/home/narr/Desktop/IpHomeWork/Calculator/build",
+  "command": "/usr/bin/g++  -I/home/narr/Desktop/IpHomeWork/Calculator/include  -fPIE -g -std=gnu++17 -o CMakeFiles/calculator.dir/main.cpp.o -c /home/narr/Desktop/IpHomeWork/Calculator/main.cpp",
+  "file": "/home/narr/Desktop/IpHomeWork/Calculator/main.cpp",
+  "output": "CMakeFiles/calculator.dir/main.cpp.o"
+}
+]
