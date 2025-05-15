@@ -35,7 +35,7 @@ std::vector<regex_grammar::token> regex_grammar::tokenize(const std::string& pat
                     tokens.push_back({token::type::dollar, "$"}); 
                     break;
                 default: 
-                throw std::runtime_error("Invalid special character");
+                    throw std::runtime_error("Invalid special character");
             }
         } 
         else if (c == '\\') {
