@@ -1,28 +1,30 @@
-#ifndef REGEX_GRAMMAR_H
-#define REGEX_GRAMMAR_H
+#ifndef GRAMMAR_HPP
+#define GRAMMAR_HPP
 
-#include "ast.hpp"
+#include "../ast/ast.hpp"
 #include <string>
-#include <vector>
-#include <memory>
 
-class regex_grammar {
+namespace grammar {
+
+class parser {
 public:
-    std::shared_ptr<pattern> parse(const std::string& pattern) const;
+    parser(std::string pattern);
+    ast::node_ptr parse();
 
 private:
-    struct token {
-        enum class type { char_, star, plus, or_, dot, lparen, rparen, question, caret, dollar, class_, end };
-        type type_;
-        std::string value;
-    };
+    std::string pattern_;
+    size_t pos_;
     
-    std::vector<token> tokenize(const std::string& pattern) const;
-    std::shared_ptr<pattern> parse_pattern(const std::vector<token>& tokens, size_t& pos) const;
-    std::shared_ptr<pattern> parse_alternative(const std::vector<token>& tokens, size_t& pos) const;
-    std::shared_ptr<pattern> parse_regex(const std::vector<token>& tokens, size_t& pos) const;
-    std::shared_ptr<pattern> parse_atom(const std::vector<token>& tokens, size_t& pos) const;
-    bool is_special_char(char c) const;
+    char peek() const;
+    char consume();
+    bool is_special(char c) const;
+    ast::node_ptr parse_expr();
+    ast::node_ptr parse_term();
+    ast::node_ptr parse_factor();
+    ast::node_ptr parse_atom();
+    ast::node_ptr parse_char_class();
 };
 
-#endif // REGEX_GRAMMAR_H
+} // namespace grammar
+
+#endif // GRAMMAR_HPP

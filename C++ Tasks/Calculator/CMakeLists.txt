@@ -14,8 +14,8 @@ set(SOURCES
     src/lexer/token.cpp
     src/lexer/lexer.cpp
     src/parser/parser.cpp
-    src/calculator_error.cpp
-    src/calculator.cpp
+    src/calculator/calculator_error.cpp
+    src/calculator/calculator.cpp
     main.cpp
 )
 
