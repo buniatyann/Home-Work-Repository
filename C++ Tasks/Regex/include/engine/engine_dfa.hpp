@@ -2,7 +2,7 @@
 #define ENGINE_DFA_HPP
 
 #include "engine_nfa.hpp"
-#include "match.hpp"
+#include "../match/match.hpp"
 #include <map>
 #include <set>
 #include <vector>
