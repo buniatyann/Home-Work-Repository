@@ -58,4 +58,6 @@ private:
     Compare comp_;
 };
 
-#endif // PRIORITYQUEUE_HPP}
+#include "PriorityQueue.tpp"
+
+#endif // PRIORITYQUEUE_HPP
