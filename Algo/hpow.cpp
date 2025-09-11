@@ -9,15 +9,14 @@ namespace hw {
         Time Complexity: O(log(n))
         Space Complexity: O(1)
     */
-    long double pow(double x, int m) {
+    long double pow(long double x, int m) {
         if (x == 0 && m <= 0) {
             throw std::invalid_argument("Indeterminate form: 0^0 or division by zero.");
         }
 
         bool neg_exp = (m < 0); // sign 
-        // long long exp = std::abs(static_cast<long long>(m)); ??
         int exp = std::abs(m); 
-        long double base = static_cast<long double>(x);
+        long double base = x;
         long double res = 1.0;
         
         while (exp > 0) {
