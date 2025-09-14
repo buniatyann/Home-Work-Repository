@@ -12,12 +12,8 @@ namespace hw {
     Time Complexity: O(2 ^ n) 
     Space Complexity: O(n) 
 */
-template <typename T>
+template <typename T, typename = typename std::enable_if<std::is_integral<T>::value>::type>
 std::size_t fib_recursive(const T& n) {
-    if constexpr (!std::is_integral<T>::value) {
-        throw std::invalid_argument("fib_recursive: Argument type must be integral.");
-    }
-
     if (n < 0) {
         throw std::invalid_argument("fib_recursive: Fibonacci sequence is only defined for non-negative integers.");
     }
@@ -33,12 +29,8 @@ std::size_t fib_recursive(const T& n) {
     Time Complexity: O(n) 
     Space Complexity: O(1) 
 */
-template <typename T>
+template <typename T, typename = typename std::enable_if<std::is_integral<T>::value>::type>
 std::size_t fib_iterative(const T& n) {
-    if constexpr (!std::is_integral<T>::value) {
-        throw std::invalid_argument("fib_iterative: Argument type must be integral.");
-    }
-
     if (n < 0) {
         throw std::invalid_argument("fib_iterative: Fibonacci sequence is only defined for non-negative integers.");
     }
