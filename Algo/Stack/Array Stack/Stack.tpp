@@ -89,4 +89,9 @@ typename Stack<T>::size_type Stack<T>::size() const {
     return elements.size();
 }
 
+template <typename T>
+void Stack<T>::swap(Stack& other) noexcept {
+    std::swap(elements, other.elements); // is that correct?
+}
+
 #endif

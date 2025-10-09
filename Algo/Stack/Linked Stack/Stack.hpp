@@ -29,6 +29,8 @@ public:
     void pop() override;
     size_type size() const override;
 
+    void swap(Stack& other) noexcept;
+
 private:
     std::list<value_type> elements_;
 };

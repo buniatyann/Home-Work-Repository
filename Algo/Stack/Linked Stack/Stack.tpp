@@ -22,7 +22,7 @@ Stack<T>& Stack<T>::operator=(const Stack& other) {
 }
 
 template <typename T>
-Stack<T>::StackList(Stack&& other) noexcept : elements_(std::move(other.elements_)) {}
+Stack<T>::Stack(Stack&& other) noexcept : elements_(std::move(other.elements_)) {}
 
 template <typename T>
 Stack<T>& Stack<T>::operator=(Stack&& other) noexcept {
@@ -44,7 +44,7 @@ void Stack<T>::emplace(Stack<T>::value_type&& element) {
 }
 
 template <typename T>
-const_reference Stack<T>::top() const {
+Stack<T>::const_reference Stack<T>::top() const {
     if (empty()) {
         throw std::out_of_range("Stack is empty");
     }
@@ -53,7 +53,7 @@ const_reference Stack<T>::top() const {
 }
 
 template <typename T>
-reference Stack<T>::top() {
+Stack<T>::reference Stack<T>::top() {
     if (empty()) {
         throw std::out_of_range("Stack is empty");
     }
@@ -87,6 +87,11 @@ void Stack<T>::pop() {
 template <typename T>
 typename Stack<T>::size_type Stack<T>::size() const {
     return elements_.size();
+}
+
+template <typename T>
+void Stack<T>::swap(Stack& other) noexcept {
+    std::swap(elements_, other.elements_);
 }
 
 #endif
