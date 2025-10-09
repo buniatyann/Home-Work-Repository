@@ -169,3 +169,10 @@ void Queue<T>::emplace(const T& val) {
  
     ++size_;
 }
+
+template <typename T>
+void Queue<T>::swap(Queue& other) noexcept {
+    std::swap(front_, other.front_);
+    std::swap(back_, other.back_);
+    std::swap(size_, other.size_);
+}

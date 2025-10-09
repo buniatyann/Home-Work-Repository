@@ -153,3 +153,10 @@ template <typename T>
 void Queue<T>::emplace(const T& val) {
     enqueue(val);
 }
+
+template <typename T>
+void Queue<T>::swap(Queue& other) noexcept {
+    std::swap(data_, other.data_);
+    std::swap(front_, other.front_);
+    std::swap(rear_, other.rear_);
+}

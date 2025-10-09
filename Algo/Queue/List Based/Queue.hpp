@@ -25,7 +25,9 @@ public:
     T& back() override;
     const T& back() const override;
     void emplace(const T&);
-     
+
+    void swap(Queue& other) noexcept;
+
 private:
     struct Node {
         T val;
