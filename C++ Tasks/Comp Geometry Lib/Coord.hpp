@@ -1,37 +1,35 @@
 #ifndef COORD_HPP
 #define COORD_HPP
 
-#include <type_traits>
 #include <cmath>
+#include <type_traits>
 
 template <typename T>
-struct coord_t {
+struct Coord_t
+{
+	static_assert(std::is_arithmetic_v<T>, "type is not arithmetic");
+
+	Coord_t() = default;
+	Coord_t(const T& other) : coord(other) {}
+    
+	bool operator==(const Coord_t& other) const {
+        return std::abs(coord - other.coord) <= tolerence;
+	}
+
+	bool operator!=(const Coord_t& other) const {
+        return !(*this == other);
+	}
+
+	operator T&() {
+		return coord;
+	}
+
+	operator const T& () const {
+        return coord;
+	}
+    
     T coord;
-    static constexpr double TOLERANCE = 0.0001;
-    bool operator==(coord_t rhs) const {
-        return std::abs(coord-rhs.coord) < TOLERANCE; // will work normally for integer types
-    }
-
-    bool operator!=(coord_t rhs) const { // arandz const & i poxancelu depqum compilery vaxenuma optimizacia ani manavand inline functionnnerum, isk const & i depqum karogha copy ani 
-        return !(*this == &rhs);
-    }
-
-    operator T&() {
-        return coord;
-    }
-
-    operator const T&() const {
-        return coord;
-    }
-
-    // operator double&() {
-    //     return static_cast<double>(coord);
-    // }
-
-    // operator double&() const {
-    //     return static_cast<double>(coord);
-    // }
+    static constexpr T tolerence 0.0001;
 };
-
 
 #endif // COORD_HPP
