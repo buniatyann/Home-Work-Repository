@@ -2,14 +2,12 @@
 #define VECTOR_HPP
 
 #include "Coord.hpp"
+#include <array>
 #include <cmath>
 #include <cstddef>
-#include <stdexcept>
-#include <iostream>
-#include <algorithm>
 #include <initializer_list>
-#include <array>
-#include <iterator>
+#include <stdexcept>
+#include <algorithm>
 
 template <typename T, std::size_t N>
 class Vector;
@@ -17,36 +15,33 @@ class Vector;
 template <typename T, std::size_t N>
 using Point = Vector<T, N>;
 
-
 template <typename T, std::size_t N>
 class Vector {
 public:
-    static constexpr TOLERANCE = 1e-9;
+    static constexpr double TOLERANCE = 1e-9;
 
     using value_type = T;
-    using reference = T&;
-    using const_reference = const T&;
-    using pointer = T*;
-    using const_pointer = const T*;
+    using reference = Coord_t<T>&;
+    using const_reference = const Coord_t<T>&;
+    using pointer = Coord_t<T>*;
+    using const_pointer = const Coord_t<T>*;
     using iterator = typename std::array<Coord_t<T>, N>::iterator;
     using const_iterator = typename std::array<Coord_t<T>, N>::const_iterator;
-    using ld = long double;
+    using compute_type = long double;
 
     Vector();
-    explicit Vector(const T& value); // fill all coordinates with the same scalar
+    explicit Vector(const T& value);
     Vector(std::initializer_list<T> list);
     explicit Vector(const std::array<T, N>& arr);
-    Vector(const Point<T, N>& p1, const Point<T, N>& p2) {
-        p1.operator-(p2);
-    }
+    Vector(const Point<T, N>& p1, const Point<T, N>& p2);
 
     Vector(const Vector& rhs) = default;
     Vector(Vector&& rhs) noexcept = default;
     Vector& operator=(const Vector& rhs) = default;
     Vector& operator=(Vector&& rhs) noexcept = default;
 
-    T& operator[](std::size_t pos);
-    const T& operator[](std::size_t pos) const;
+    Coord_t<T>& operator[](std::size_t pos);
+    const Coord_t<T>& operator[](std::size_t pos) const;
 
     Vector operator+(const Vector& rhs) const;
     Vector operator-(const Vector& rhs) const;
@@ -58,25 +53,25 @@ public:
     Vector& operator*=(T scalar);
     Vector& operator/=(T scalar);
 
-    ld norm1() const;
-    ld norm2() const;
-    ld length() const; // internally calls norm 2
-    ld squared_norm() const;
-    ld distance(const Vector& rhs) const;
-    ld dot(const Vector& rhs) const;
+    compute_type norm1() const;
+    compute_type norm2() const;
+    compute_type length() const;
+    compute_type squared_norm() const;
+    compute_type distance(const Vector& rhs) const;
+    compute_type dot(const Vector& rhs) const;
+    bool parallel(const Vector& rhs) const;
 
     Vector normalize() const;
-    ld angle_between(const Vector& rhs) const;
+    compute_type angle_between(const Vector& rhs) const;
     Vector project_onto(const Vector& rhs) const;
     Vector reject_from(const Vector& rhs) const;
     Vector reflect_about(const Vector& normal) const;
 
-    Vector perp() const requires (N == 2);
-    Vector cross(const Vector& rhs) const requires (N == 3);
-    ld vector_product(const Vector& rhs) const requires (N == 2);
-    ld triple_scalar_product(const Vector& b, const Vector& c) const requires (N == 3);
+    // Vector perp() const requires (N == 2);
+    Vector vector_product(const Vector& rhs) const requires (N == 3);
+    compute_type cross(const Vector& rhs) const requires (N == 2);
+    compute_type triple_scalar_product(const Vector& b, const Vector& c) const requires (N == 3);
 
-    // Iterators
     iterator begin() { return data_.begin(); }
     iterator end() { return data_.end(); }
 

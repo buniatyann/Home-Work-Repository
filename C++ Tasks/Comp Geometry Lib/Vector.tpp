@@ -2,13 +2,15 @@
 #define VECTOR_TPP
 
 #include "Vector.hpp"
+#include <cmath>
+#include <algorithm>
 
 template <typename T, std::size_t N>
 Vector<T, N>::Vector() : data_{} {}
 
 template <typename T, std::size_t N>
 Vector<T, N>::Vector(const T& value) {
-    std::fill(data_.begin(), data_.end(), value);
+    data_.fill(Coord_t<T>(value));
 }
 
 template <typename T, std::size_t N>
@@ -17,21 +19,31 @@ Vector<T, N>::Vector(std::initializer_list<T> list) {
         throw std::invalid_argument("Vector: wrong number of elements");
     }
 
-    std::copy(list.begin(), list.end(), data_.begin());
+    std::size_t i = 0;
+    for (const auto& val : list) {
+        data_[i++] = Coord_t<T>(val);
+    }
 }
 
 template <typename T, std::size_t N>
 Vector<T, N>::Vector(const std::array<T, N>& arr) {
-    std::copy(arr.begin(), arr.end(), data_.begin());
+    for (std::size_t i = 0; i < N; ++i) {
+        data_[i] = Coord_t<T>(arr[i]);
+    }
 }
 
 template <typename T, std::size_t N>
-T& Vector<T, N>::operator[](std::size_t pos) {
+Vector<T, N>::Vector(const Point<T, N>& p1, const Point<T, N>& p2) {
+    *this = p2 - p1;
+}
+
+template <typename T, std::size_t N>
+Coord_t<T>& Vector<T, N>::operator[](std::size_t pos) {
     return data_[pos];
 }
 
 template <typename T, std::size_t N>
-const T& Vector<T, N>::operator[](std::size_t pos) const {
+const Coord_t<T>& Vector<T, N>::operator[](std::size_t pos) const {
     return data_[pos];
 }
 
@@ -41,7 +53,7 @@ Vector<T, N> Vector<T, N>::operator+(const Vector& rhs) const {
     for (std::size_t i = 0; i < N; ++i) {
         result[i] = data_[i] + rhs[i];
     }
-    
+
     return result;
 }
 
@@ -51,7 +63,7 @@ Vector<T, N> Vector<T, N>::operator-(const Vector& rhs) const {
     for (std::size_t i = 0; i < N; ++i) {
         result[i] = data_[i] - rhs[i];
     }
-    
+
     return result;
 }
 
@@ -61,7 +73,7 @@ Vector<T, N> Vector<T, N>::operator*(T scalar) const {
     for (std::size_t i = 0; i < N; ++i) {
         result[i] = data_[i] * scalar;
     }
-    
+
     return result;
 }
 
@@ -70,12 +82,12 @@ Vector<T, N> Vector<T, N>::operator/(T scalar) const {
     if (scalar == 0) {
         throw std::domain_error("Division by zero");
     }
-    
+
     Vector result;
     for (std::size_t i = 0; i < N; ++i) {
         result[i] = data_[i] / scalar;
     }
-    
+
     return result;
 }
 
@@ -84,7 +96,7 @@ Vector<T, N>& Vector<T, N>::operator+=(const Vector& rhs) {
     for (std::size_t i = 0; i < N; ++i) {
         data_[i] += rhs[i];
     }
-    
+
     return *this;
 }
 
@@ -93,7 +105,7 @@ Vector<T, N>& Vector<T, N>::operator-=(const Vector& rhs) {
     for (std::size_t i = 0; i < N; ++i) {
         data_[i] -= rhs[i];
     }
-    
+
     return *this;
 }
 
@@ -102,7 +114,7 @@ Vector<T, N>& Vector<T, N>::operator*=(T scalar) {
     for (std::size_t i = 0; i < N; ++i) {
         data_[i] *= scalar;
     }
-    
+
     return *this;
 }
 
@@ -111,83 +123,97 @@ Vector<T, N>& Vector<T, N>::operator/=(T scalar) {
     if (scalar == 0) {
         throw std::domain_error("Division by zero");
     }
-    
+
     for (std::size_t i = 0; i < N; ++i) {
         data_[i] /= scalar;
     }
-    
+
     return *this;
 }
 
 template <typename T, std::size_t N>
-Vector<T, N>::ld Vector<T, N>::norm1() const {
-    T ans = 0;
-    for (std::size_t i = 0; i < N; ++i) {
-        ans += std::abs(data_[i]);
+typename Vector<T, N>::compute_type Vector<T, N>::norm1() const {
+    compute_type sum = 0;
+    for (const auto& coord : data_) {
+        sum += std::abs(static_cast<T>(coord));
     }
-    
-    return ans;
+
+    return sum;
 }
 
 template <typename T, std::size_t N>
-Vector<T, N>::ld Vector<T, N>::norm2() const {
-    T ans = 0;
-    for (std::size_t i = 0; i < N; ++i) {
-        ans += data_[i] * data_[i];
+typename Vector<T, N>::compute_type Vector<T, N>::norm2() const {
+    compute_type sum = 0;
+    for (const auto& coord : data_) {
+        T val = coord;
+        sum += val * val;
     }
-    
-    return std::sqrt(ans);
+
+    return std::sqrt(sum);
 }
 
 template <typename T, std::size_t N>
-Vector<T, N>::ld Vector<T, N>::length() const {
+typename Vector<T, N>::compute_type Vector<T, N>::length() const {
     return norm2();
 }
 
 template <typename T, std::size_t N>
-Vector<T, N>::ld Vector<T, N>::squared_norm() const {
-    T ans = 0;
-    for (std::size_t i = 0; i < N; ++i) {
-        ans += data_[i] * data_[i];
+typename Vector<T, N>::compute_type Vector<T, N>::squared_norm() const {
+    compute_type sum = 0;
+    for (const auto& coord : data_) {
+        auto val = coord;
+        sum += val * val;
     }
 
-    return ans;
+    return sum;
 }
 
 template <typename T, std::size_t N>
-Vector<T, N>::ld Vector<T, N>::distance(const Vector& rhs) const {
+typename Vector<T, N>::compute_type Vector<T, N>::distance(const Vector& rhs) const {
     return (*this - rhs).norm2();
 }
 
 template <typename T, std::size_t N>
-Vector<T, N>::ld Vector<T, N>::dot(const Vector& rhs) const {
-    T ans = 0;
+typename Vector<T, N>::compute_type Vector<T, N>::dot(const Vector& rhs) const {
+    compute_type result = 0;
     for (std::size_t i = 0; i < N; ++i) {
-        ans += data_[i] * rhs[i];
+        result += data_[i] * rhs[i];
     }
-    return ans;
+
+    return result;
+}
+
+template <typename T, std::size_t N>
+bool Vector<T, N>::parallel(const Vector& rhs) const {
+    for (std::size_t i = 1; i < N; ++i) {
+        if (data_[i - 1] * rhs[i] != data_[i] * rhs[i - 1]) {
+            return false;
+        }
+    }
+
+    return true;
 }
 
 template <typename T, std::size_t N>
 Vector<T, N> Vector<T, N>::normalize() const {
-    T n = norm2();
+    auto n = norm2();
     if (n == 0) {
         throw std::domain_error("normalize: zero-length vector");
     }
 
-    return *this / n;
+    return *this / static_cast<T>(n);
 }
 
 template <typename T, std::size_t N>
-Vector<T, N>::ld Vector<T, N>::angle_between(const Vector& rhs) const {
+typename Vector<T, N>::compute_type Vector<T, N>::angle_between(const Vector& rhs) const {
     auto denom = norm2() * rhs.norm2();
     if (denom == 0) {
         throw std::domain_error("angle_between: zero-length vector");
     }
 
     auto cosine = dot(rhs) / denom;
-    cosine = std::max(T(-1), std::min(T(1), cosine));
-    
+    cosine = std::clamp(cosine, static_cast<compute_type>(-1), static_cast<compute_type>(1));
+
     return std::acos(cosine);
 }
 
@@ -197,7 +223,7 @@ Vector<T, N> Vector<T, N>::project_onto(const Vector& rhs) const {
     if (denom == 0) {
         throw std::domain_error("project_onto: zero vector");
     }
-   
+
     return rhs * (dot(rhs) / denom);
 }
 
@@ -212,14 +238,14 @@ Vector<T, N> Vector<T, N>::reflect_about(const Vector& normal) const {
     return *this - n * (2 * dot(n));
 }
 
-template <typename T, std::size_t N>
-Vector<T, N> Vector<T, N>::perp() const requires (N == 2) {
-    return Vector(Point<N, T>{-data_[1], data_[0]});
-}
+// template <typename T, std::size_t N>
+// Vector<T, N> Vector<T, N>::perp() const requires (N == 2) {
+//     return Vector({-data_[1], data_[0]});
+// }
 
 template <typename T, std::size_t N>
-Vector<T, N> Vector<T, N>::cross(const Vector& rhs) const requires (N == 3) {
-    return Vector(Point<3, T>{
+Vector<T, N> Vector<T, N>::vector_product(const Vector& rhs) const requires (N == 3) {
+    return Vector({
         data_[1] * rhs[2] - data_[2] * rhs[1],
         data_[2] * rhs[0] - data_[0] * rhs[2],
         data_[0] * rhs[1] - data_[1] * rhs[0]
@@ -227,12 +253,12 @@ Vector<T, N> Vector<T, N>::cross(const Vector& rhs) const requires (N == 3) {
 }
 
 template <typename T, std::size_t N>
-Vector<T, N>::ld Vector<T, N>::vector_product(const Vector& rhs) const requires (N == 2) {
+typename Vector<T, N>::compute_type Vector<T, N>::cross(const Vector& rhs) const requires (N == 2) {
     return data_[0] * rhs[1] - data_[1] * rhs[0];
 }
 
 template <typename T, std::size_t N>
-Vector<T, N>::ld Vector<T, N>::triple_scalar_product(const Vector& b, const Vector& c) const requires (N == 3) {
+typename Vector<T, N>::compute_type Vector<T, N>::triple_scalar_product(const Vector& b, const Vector& c) const requires (N == 3) {
     return this->dot(b.cross(c));
 }
 
