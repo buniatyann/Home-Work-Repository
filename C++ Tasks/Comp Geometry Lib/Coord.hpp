@@ -7,29 +7,28 @@
 template <typename T>
 struct Coord_t
 {
-	static_assert(std::is_arithmetic_v<T>, "type is not arithmetic");
+    static_assert(std::is_arithmetic_v<T>, "type is not arithmetic");
 
-	Coord_t() = default;
-	Coord_t(const T& other) : coord(other) {}
-    
-	bool operator==(const Coord_t& other) const {
-        return std::abs(coord - other.coord) <= tolerence;
-	}
+    Coord_t();
+    Coord_t(const T& other);
 
-	bool operator!=(const Coord_t& other) const {
-        return !(*this == other);
-	}
+    bool operator==(const Coord_t& other) const;
+    bool operator!=(const Coord_t& other) const;
 
-	operator T&() {
-		return coord;
-	}
+    Coord_t operator+(const Coord_t& other) const;
+    Coord_t operator-(const Coord_t& other) const;
+    Coord_t operator*(const T& scalar) const;
+    Coord_t operator/(const T& scalar) const;
 
-	operator const T& () const {
-        return coord;
-	}
-    
+    operator T&();
+    operator const T&() const;
+	operator double() const;
+
     T coord;
-    static constexpr T tolerence 0.0001;
+
+    static constexpr long double tolerance = std::is_floating_point_v<T> ? 0.0001 : 0;
 };
+
+#include "Coord.tpp"  
 
 #endif // COORD_HPP
