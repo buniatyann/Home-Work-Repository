@@ -8,6 +8,7 @@
 #include <initializer_list>
 #include <stdexcept>
 #include <algorithm>
+#include <type_traits>
 
 template <typename T, std::size_t N>
 class Vector;
@@ -19,7 +20,7 @@ template <typename T, std::size_t N>
 class Vector {
 public:
     static constexpr double TOLERANCE = 1e-9;
-
+    
     using value_type = T;
     using reference = Coord_t<T>&;
     using const_reference = const Coord_t<T>&;
@@ -29,20 +30,23 @@ public:
     using const_iterator = typename std::array<Coord_t<T>, N>::const_iterator;
     using compute_type = long double;
 
+    // Constructors
     Vector();
     explicit Vector(const T& value);
     Vector(std::initializer_list<T> list);
     explicit Vector(const std::array<T, N>& arr);
     Vector(const Point<T, N>& p1, const Point<T, N>& p2);
-
+    
     Vector(const Vector& rhs) = default;
     Vector(Vector&& rhs) noexcept = default;
     Vector& operator=(const Vector& rhs) = default;
     Vector& operator=(Vector&& rhs) noexcept = default;
 
+    // Element access
     Coord_t<T>& operator[](std::size_t pos);
     const Coord_t<T>& operator[](std::size_t pos) const;
 
+    // Arithmetic operators
     Vector operator+(const Vector& rhs) const;
     Vector operator-(const Vector& rhs) const;
     Vector operator*(T scalar) const;
@@ -53,31 +57,40 @@ public:
     Vector& operator*=(T scalar);
     Vector& operator/=(T scalar);
 
+    // Norms and distances
     compute_type norm1() const;
     compute_type norm2() const;
     compute_type length() const;
     compute_type squared_norm() const;
     compute_type distance(const Vector& rhs) const;
+
+    // Vector operations
     compute_type dot(const Vector& rhs) const;
     bool parallel(const Vector& rhs) const;
-
     Vector normalize() const;
     compute_type angle_between(const Vector& rhs) const;
     Vector project_onto(const Vector& rhs) const;
     Vector reject_from(const Vector& rhs) const;
     Vector reflect_about(const Vector& normal) const;
 
-    // Vector perp() const requires (N == 2);
-    Vector vector_product(const Vector& rhs) const requires (N == 3);
-    compute_type cross(const Vector& rhs) const requires (N == 2);
-    compute_type triple_scalar_product(const Vector& b, const Vector& c) const requires (N == 3);
+    // Dimension-specific operations
+    template<typename U = T>
+    std::enable_if_t<N == 2, Vector> perp() const;
+    
+    template<typename U = T>
+    std::enable_if_t<N == 2, compute_type> cross(const Vector& rhs) const;
+    
+    template<typename U = T>
+    std::enable_if_t<N == 3, Vector> vector_product(const Vector& rhs) const;
+    
+    template<typename U = T>
+    std::enable_if_t<N == 3, compute_type> triple_scalar_product(const Vector& b, const Vector& c) const;
 
+    // Iterators
     iterator begin() { return data_.begin(); }
     iterator end() { return data_.end(); }
-
     const_iterator begin() const { return data_.begin(); }
     const_iterator end() const { return data_.end(); }
-
     const_iterator cbegin() const { return data_.cbegin(); }
     const_iterator cend() const { return data_.cend(); }
 
