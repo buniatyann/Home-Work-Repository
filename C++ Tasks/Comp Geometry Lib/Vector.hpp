@@ -1,102 +1,64 @@
 #ifndef VECTOR_HPP
 #define VECTOR_HPP
 
-#include "Coord.hpp"
 #include <array>
-#include <cmath>
-#include <cstddef>
 #include <initializer_list>
-#include <stdexcept>
-#include <algorithm>
 #include <type_traits>
-
-template <typename T, std::size_t N>
-class Vector;
-
-template <typename T, std::size_t N>
-using Point = Vector<T, N>;
+#include "Coordinate.hpp"
 
 template <typename T, std::size_t N>
 class Vector {
+    static_assert(std::is_arithmetic_v<T>, "T must be a numeric type");
+    static_assert(N > 0, "N must be greater than 0");
+
 public:
-    static constexpr double TOLERANCE = 1e-9;
-    
-    using value_type = T;
-    using reference = Coord_t<T>&;
-    using const_reference = const Coord_t<T>&;
-    using pointer = Coord_t<T>*;
-    using const_pointer = const Coord_t<T>*;
-    using iterator = typename std::array<Coord_t<T>, N>::iterator;
-    using const_iterator = typename std::array<Coord_t<T>, N>::const_iterator;
-    using compute_type = long double;
+    using iterator = typename std::array<coord_t<T>, N>::iterator;
+    using const_iterator = typename std::array<coord_t<T>, N>::const_iterator;
 
-    // Constructors
+    iterator begin();
+    iterator end();
+    const_iterator begin() const;
+    const_iterator end() const;
+    const_iterator cbegin() const;
+    const_iterator cend() const;
+
     Vector();
-    explicit Vector(const T& value);
-    Vector(std::initializer_list<T> list);
     explicit Vector(const std::array<T, N>& arr);
-    Vector(const Point<T, N>& p1, const Point<T, N>& p2);
-    
-    Vector(const Vector& rhs) = default;
-    Vector(Vector&& rhs) noexcept = default;
-    Vector& operator=(const Vector& rhs) = default;
-    Vector& operator=(Vector&& rhs) noexcept = default;
+    Vector(const Vector& other);
+    Vector(Vector&& other) noexcept;
+    Vector(std::initializer_list<T> il);
+    Vector(const Vector& p2, const Vector& p1);
 
-    // Element access
-    Coord_t<T>& operator[](std::size_t pos);
-    const Coord_t<T>& operator[](std::size_t pos) const;
+    Vector& operator=(const Vector& other);
+    Vector& operator=(Vector&& other) noexcept;
 
-    // Arithmetic operators
-    Vector operator+(const Vector& rhs) const;
-    Vector operator-(const Vector& rhs) const;
+    coord_t<T>& operator[](std::size_t idx);
+    const coord_t<T>& operator[](std::size_t idx) const;
+
+    Vector& operator+=(const Vector& other);
+    Vector& operator-=(const Vector& other);
+    Vector operator+(const Vector& other) const;
+    Vector operator-(const Vector& other) const;
+    Vector operator-() const;
+
+    Vector& operator*=(T scalar);
+    Vector& operator/=(T scalar);
     Vector operator*(T scalar) const;
     Vector operator/(T scalar) const;
 
-    Vector& operator+=(const Vector& rhs);
-    Vector& operator-=(const Vector& rhs);
-    Vector& operator*=(T scalar);
-    Vector& operator/=(T scalar);
-
-    // Norms and distances
-    compute_type norm1() const;
-    compute_type norm2() const;
-    compute_type length() const;
-    compute_type squared_norm() const;
-    compute_type distance(const Vector& rhs) const;
-
-    // Vector operations
-    compute_type dot(const Vector& rhs) const;
-    bool parallel(const Vector& rhs) const;
-    Vector normalize() const;
-    compute_type angle_between(const Vector& rhs) const;
-    Vector project_onto(const Vector& rhs) const;
-    Vector reject_from(const Vector& rhs) const;
-    Vector reflect_about(const Vector& normal) const;
-
-    // Dimension-specific operations
-    template<typename U = T>
-    std::enable_if_t<N == 2, Vector> perp() const;
-    
-    template<typename U = T>
-    std::enable_if_t<N == 2, compute_type> cross(const Vector& rhs) const;
-    
-    template<typename U = T>
-    std::enable_if_t<N == 3, Vector> vector_product(const Vector& rhs) const;
-    
-    template<typename U = T>
-    std::enable_if_t<N == 3, compute_type> triple_scalar_product(const Vector& b, const Vector& c) const;
-
-    // Iterators
-    iterator begin() { return data_.begin(); }
-    iterator end() { return data_.end(); }
-    const_iterator begin() const { return data_.begin(); }
-    const_iterator end() const { return data_.end(); }
-    const_iterator cbegin() const { return data_.cbegin(); }
-    const_iterator cend() const { return data_.cend(); }
+    T dot(const Vector& other) const;
+    T cross(const Vector& other) const;
+    double length() const;
+    double angle_between(const Vector& other) const;
+    Vector project_onto(const Vector& other) const;
+    bool parallel(const Vector& other) const;
 
 private:
-    std::array<Coord_t<T>, N> data_;
+    std::array<coord_t<T>, N> data;
 };
+
+template <typename T, std::size_t N>
+Vector<T, N> operator*(T scalar, const Vector<T, N>& vec);
 
 #include "Vector.tpp"
 

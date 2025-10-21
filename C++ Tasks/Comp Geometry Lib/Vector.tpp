@@ -3,131 +3,141 @@
 
 #include "Vector.hpp"
 #include <cmath>
-#include <algorithm>
 #include <cassert>
-
-// ============================================================================
-// Constructors
-// ============================================================================
+#include <type_traits>
 
 template <typename T, std::size_t N>
-Vector<T, N>::Vector() : data_{} {}
+typename Vector<T, N>::iterator Vector<T, N>::begin() { return data.begin(); }
 
 template <typename T, std::size_t N>
-Vector<T, N>::Vector(const T& value) {
-    data_.fill(Coord_t<T>(value));
-}
+typename Vector<T, N>::iterator Vector<T, N>::end() { return data.end(); }
 
 template <typename T, std::size_t N>
-Vector<T, N>::Vector(std::initializer_list<T> list) {
-    if (list.size() != N) {
-        throw std::invalid_argument("Vector: initializer list size must match dimension");
-    }
+typename Vector<T, N>::const_iterator Vector<T, N>::begin() const { return data.begin(); }
 
-    std::size_t i = 0;
-    for (const auto& val : list) {
-        data_[i++] = Coord_t<T>(val);
+template <typename T, std::size_t N>
+typename Vector<T, N>::const_iterator Vector<T, N>::end() const { return data.end(); }
+
+template <typename T, std::size_t N>
+typename Vector<T, N>::const_iterator Vector<T, N>::cbegin() const { return data.cbegin(); }
+
+template <typename T, std::size_t N>
+typename Vector<T, N>::const_iterator Vector<T, N>::cend() const { return data.cend(); }
+
+template <typename T, std::size_t N>
+Vector<T, N>::Vector() {
+    for (auto& elem : data) {
+        elem = coord_t<T>();
     }
 }
 
 template <typename T, std::size_t N>
 Vector<T, N>::Vector(const std::array<T, N>& arr) {
     for (std::size_t i = 0; i < N; ++i) {
-        data_[i] = Coord_t<T>(arr[i]);
+        data[i] = coord_t<T>(arr[i]);
     }
 }
 
 template <typename T, std::size_t N>
-Vector<T, N>::Vector(const Point<T, N>& p1, const Point<T, N>& p2) {
-    *this = p2 - p1;
-}
-
-// ============================================================================
-// Element Access
-// ============================================================================
+Vector<T, N>::Vector(const Vector& other) : data(other.data) {}
 
 template <typename T, std::size_t N>
-Coord_t<T>& Vector<T, N>::operator[](std::size_t pos) {
-    assert(pos < N && "Vector index out of bounds");
-    return data_[pos];
-}
+Vector<T, N>::Vector(Vector&& other) noexcept : data(std::move(other.data)) {}
 
 template <typename T, std::size_t N>
-const Coord_t<T>& Vector<T, N>::operator[](std::size_t pos) const {
-    assert(pos < N && "Vector index out of bounds");
-    return data_[pos];
-}
-
-// ============================================================================
-// Arithmetic Operators
-// ============================================================================
-
-template <typename T, std::size_t N>
-Vector<T, N> Vector<T, N>::operator+(const Vector& rhs) const {
-    Vector result;
+Vector<T, N>::Vector(std::initializer_list<T> il) {
+    assert(il.size() == N && "Initializer list size must match dimension N");
+    auto it = il.begin();
     for (std::size_t i = 0; i < N; ++i) {
-        result.data_[i] = data_[i] + rhs.data_[i];
+        data[i] = coord_t<T>(*it++);
     }
-
-    return result;
 }
 
 template <typename T, std::size_t N>
-Vector<T, N> Vector<T, N>::operator-(const Vector& rhs) const {
-    Vector result;
+Vector<T, N>::Vector(const Vector& p2, const Vector& p1) {
     for (std::size_t i = 0; i < N; ++i) {
-        result.data_[i] = data_[i] - rhs.data_[i];
+        data[i] = coord_t<T>(p2.data[i].value - p1.data[i].value);
     }
-    
-    return result;
 }
 
 template <typename T, std::size_t N>
-Vector<T, N> Vector<T, N>::operator*(T scalar) const {
-    Vector result;
-    for (std::size_t i = 0; i < N; ++i) {
-        result.data_[i] = data_[i] * scalar;
+Vector<T, N>& Vector<T, N>::operator=(const Vector& other) {
+    if (this != &other) {
+        data = other.data;
     }
-    
-    return result;
+
+    return *this;
 }
 
 template <typename T, std::size_t N>
-Vector<T, N> Vector<T, N>::operator/(T scalar) const {
-    if (std::abs(scalar) < TOLERANCE) {
-        throw std::domain_error("Vector division by zero");
-    }
-
-    Vector result;
-    for (std::size_t i = 0; i < N; ++i) {
-        result.data_[i] = data_[i] / scalar;
-    }
-    
-    return result;
-}
-
-template <typename T, std::size_t N>
-Vector<T, N>& Vector<T, N>::operator+=(const Vector& rhs) {
-    for (std::size_t i = 0; i < N; ++i) {
-        data_[i] += rhs.data_[i];
+Vector<T, N>& Vector<T, N>::operator=(Vector&& other) noexcept {
+    if (this != &other) {
+        data = std::move(other.data);
     }
     
     return *this;
 }
 
 template <typename T, std::size_t N>
-Vector<T, N>& Vector<T, N>::operator-=(const Vector& rhs) {
+coord_t<T>& Vector<T, N>::operator[](std::size_t idx) {
+    assert(idx < N && "Index out of bounds");
+    return data[idx];
+}
+
+template <typename T, std::size_t N>
+const coord_t<T>& Vector<T, N>::operator[](std::size_t idx) const {
+    assert(idx < N && "Index out of bounds");
+    return data[idx];
+}
+
+template <typename T, std::size_t N>
+Vector<T, N>& Vector<T, N>::operator+=(const Vector& other) {
     for (std::size_t i = 0; i < N; ++i) {
-        data_[i] -= rhs.data_[i];
+        data[i].value += other.data[i].value;
     }
     
     return *this;
+}
+
+template <typename T, std::size_t N>
+Vector<T, N>& Vector<T, N>::operator-=(const Vector& other) {
+    for (std::size_t i = 0; i < N; ++i) {
+        data[i].value -= other.data[i].value;
+    }
+    
+    return *this;
+}
+
+template <typename T, std::size_t N>
+Vector<T, N> Vector<T, N>::operator+(const Vector& other) const {
+    Vector result = *this;
+    result += other;
+    
+    return result;
+}
+
+template <typename T, std::size_t N>
+Vector<T, N> Vector<T, N>::operator-(const Vector& other) const {
+    Vector result = *this;
+    result -= other;
+    
+    return result;
+}
+
+template <typename T, std::size_t N>
+Vector<T, N> Vector<T, N>::operator-() const {
+    Vector result;
+    for (std::size_t i = 0; i < N; ++i) {
+        result.data[i].value = -data[i].value;
+    }
+    
+    return result;
 }
 
 template <typename T, std::size_t N>
 Vector<T, N>& Vector<T, N>::operator*=(T scalar) {
-    for (std::size_t i = 0; i < N; ++i) {
-        data_[i] *= scalar;
+    for (auto& elem : data) {
+        elem.value *= scalar;
     }
     
     return *this;
@@ -135,212 +145,152 @@ Vector<T, N>& Vector<T, N>::operator*=(T scalar) {
 
 template <typename T, std::size_t N>
 Vector<T, N>& Vector<T, N>::operator/=(T scalar) {
-    if (std::abs(scalar) < TOLERANCE) {
-        throw std::domain_error("Vector division by zero");
-    }
-
-    for (std::size_t i = 0; i < N; ++i) {
-        data_[i] /= scalar;
+    static_assert(!std::is_integral_v<T> || scalar != 0, "Division by zero for integral types");
+    assert(scalar != 0 && "Division by zero");
+    for (auto& elem : data) {
+        elem.value /= scalar;
     }
     
     return *this;
 }
 
-// ============================================================================
-// Norms and Distances
-// ============================================================================
-
 template <typename T, std::size_t N>
-typename Vector<T, N>::compute_type Vector<T, N>::norm1() const {
-    compute_type sum = 0;
-    for (const auto& coord : data_) {
-        sum += std::abs(static_cast<compute_type>(coord));
-    }
+Vector<T, N> Vector<T, N>::operator*(T scalar) const {
+    Vector result = *this;
+    result *= scalar;
     
-    return sum;
+    return result;
 }
 
 template <typename T, std::size_t N>
-typename Vector<T, N>::compute_type Vector<T, N>::norm2() const {
-    return std::sqrt(squared_norm());
+Vector<T, N> operator*(T scalar, const Vector<T, N>& vec) {
+    return vec * scalar;
 }
 
 template <typename T, std::size_t N>
-typename Vector<T, N>::compute_type Vector<T, N>::length() const {
-    return norm2();
-}
-
-template <typename T, std::size_t N>
-typename Vector<T, N>::compute_type Vector<T, N>::squared_norm() const {
-    compute_type sum = 0;
-    for (const auto& coord : data_) {
-        compute_type val = static_cast<compute_type>(coord);
-        sum += val * val;
-    }
+Vector<T, N> Vector<T, N>::operator/(T scalar) const {
+    Vector result = *this;
+    result /= scalar;
     
-    return sum;
+    return result;
 }
 
 template <typename T, std::size_t N>
-typename Vector<T, N>::compute_type Vector<T, N>::distance(const Vector& rhs) const {
-    return (*this - rhs).norm2();
-}
-
-// ============================================================================
-// Vector Operations
-// ============================================================================
-
-template <typename T, std::size_t N>
-typename Vector<T, N>::compute_type Vector<T, N>::dot(const Vector& rhs) const {
-    compute_type result = 0;
+T Vector<T, N>::dot(const Vector& other) const {
+    T result = T{};
     for (std::size_t i = 0; i < N; ++i) {
-        result += static_cast<compute_type>(data_[i]) * static_cast<compute_type>(rhs.data_[i]);
+        result += data[i].value * other.data[i].value;
     }
     
     return result;
 }
 
 template <typename T, std::size_t N>
-bool Vector<T, N>::parallel(const Vector& rhs) const {
-    if (squared_norm() < TOLERANCE * TOLERANCE || rhs.squared_norm() < TOLERANCE * TOLERANCE) {
-        return false; // Zero vector is not parallel to anything
+T Vector<T, N>::cross(const Vector& other) const {
+    static_assert(N == 2 || N == 3, "Cross product numerical value only defined for N=2 or N=3");
+    if constexpr (N == 2) {
+        return data[0].value * other.data[1].value - data[1].value * other.data[0].value;
+    } 
+    else {
+        T i = data[1].value * other.data[2].value - data[2].value * other.data[1].value;
+        T j = data[2].value * other.data[0].value - data[0].value * other.data[2].value;
+        T k = data[0].value * other.data[1].value - data[1].value * other.data[0].value;
+    
+        return std::sqrt(i*i + j*j + k*k);
+    }
+}
+
+template <typename T, std::size_t N>
+double Vector<T, N>::length() const {
+    return std::sqrt(static_cast<double>(dot(*this)));
+}
+
+template <typename T, std::size_t N>
+double Vector<T, N>::angle_between(const Vector& other) const {
+    double dot_prod = static_cast<double>(dot(other));
+    double len1 = length();
+    double len2 = other.length();
+    if (len1 == 0 || len2 == 0) {
+        return 0.0;
+    }
+    double cos_theta = dot_prod / (len1 * len2);
+    cos_theta = std::max(-1.0, std::min(1.0, cos_theta));
+    return std::acos(cos_theta);
+}
+
+template <typename T, std::size_t N>
+Vector<T, N> Vector<T, N>::project_onto(const Vector& other) const {
+    T dot_prod = dot(other);
+    T other_sq = other.dot(other);
+    if (other_sq == 0) {
+        return Vector();
+    }
+    
+    return other * (dot_prod / other_sq);
+}
+
+template <typename T, std::size_t N>
+bool Vector<T, N>::parallel(const Vector& other) const {
+    // Check if either vector is zero
+    bool this_zero = true, other_zero = true;
+    for (std::size_t i = 0; i < N; ++i) {
+        if (std::abs(static_cast<double>(data[i].value)) > coord_t<T>::TOLERANCE) {
+            this_zero = false;
+        }
+        if (std::abs(static_cast<double>(other.data[i].value)) > coord_t<T>::TOLERANCE) {
+            other_zero = false;
+        }
     }
 
-    compute_type ratio = 0;
-    bool ratio_set = false;
-    for (std::size_t i = 0; i < N; ++i) {
-        compute_type this_val = static_cast<compute_type>(data_[i]);
-        compute_type rhs_val = static_cast<compute_type>(rhs.data_[i]);
-        if (std::abs(this_val) < TOLERANCE && std::abs(rhs_val) < TOLERANCE) {
-            continue;
-        }
-        // If one is zero and the other isn't, vectors are not parallel
-        if (std::abs(this_val) < TOLERANCE || std::abs(rhs_val) < TOLERANCE) {
-            return false;
-        }
-        
-        compute_type current_ratio = this_val / rhs_val;
-        if (!ratio_set) {
-            ratio = current_ratio;
-            ratio_set = true;
+    if (this_zero || other_zero) {
+        return true; // Zero vector is parallel to any vector
+    }
+
+    // For N=1, check if components are equal or proportional
+    if constexpr (N == 1) {
+        if constexpr (std::is_floating_point_v<T>) {
+            return std::abs(static_cast<double>(data[0].value) - static_cast<double>(other.data[0].value)) < coord_t<T>::TOLERANCE;
         } 
         else {
-            // Check if ratios are consistent within tolerance
-            compute_type ratio_diff = std::abs(current_ratio - ratio);
-            compute_type relative_tolerance = TOLERANCE * std::max(std::abs(ratio), std::abs(current_ratio));    
-            if (ratio_diff > relative_tolerance) {
-                return false;
-            }
+            return data[0].value == other.data[0].value;
         }
     }
-    
-    return ratio_set; // If no ratio was set, both vectors are effectively zero
-}
 
-template <typename T, std::size_t N>
-Vector<T, N> Vector<T, N>::normalize() const {
-    compute_type n = norm2();
-    if (n < TOLERANCE) {
-        throw std::domain_error("Cannot normalize zero-length vector");
+    // For N>1, check proportionality using cross-ratio
+    // Find first non-zero component pair to establish ratio
+    double ratio = 0.0;
+    bool ratio_set = false;
+    for (std::size_t i = 0; i < N; ++i) {
+        if (std::abs(static_cast<double>(other.data[i].value)) > coord_t<T>::TOLERANCE) {
+            ratio = static_cast<double>(data[i].value) / static_cast<double>(other.data[i].value);
+            ratio_set = true;
+            break;
+        }
+    }
+    if (!ratio_set) {
+        return false; // No non-zero component to establish ratio
     }
 
-    return *this / static_cast<T>(n);
-}
-
-template <typename T, std::size_t N>
-typename Vector<T, N>::compute_type Vector<T, N>::angle_between(const Vector& rhs) const {
-    compute_type this_norm = norm2();
-    compute_type rhs_norm = rhs.norm2();
-    if (this_norm < TOLERANCE || rhs_norm < TOLERANCE) {
-        throw std::domain_error("Cannot compute angle with zero-length vector");
+    // Check if all components follow the same ratio
+    for (std::size_t i = 0; i < N; ++i) {
+        if (std::abs(static_cast<double>(other.data[i].value)) > coord_t<T>::TOLERANCE) {
+            double current_ratio = static_cast<double>(data[i].value) / static_cast<double>(other.data[i].value);
+            if constexpr (std::is_floating_point_v<T>) {
+                if (std::abs(current_ratio - ratio) > coord_t<T>::TOLERANCE) {
+                    return false;
+                }
+            } 
+            else {
+                if (current_ratio != ratio) {
+                    return false;
+                }
+            }
+        } 
+        else if (std::abs(static_cast<double>(data[i].value)) > coord_t<T>::TOLERANCE) {
+            return false; // Non-zero component in this where other is zero
+        }
     }
-
-    compute_type cosine = dot(rhs) / (this_norm * rhs_norm);
-    
-    // Clamp to [-1, 1] to handle numerical errors
-    cosine = std::max(static_cast<compute_type>(-1.0), 
-                      std::min(static_cast<compute_type>(1.0), cosine));
-
-    return std::acos(cosine);
-}
-
-template <typename T, std::size_t N>
-Vector<T, N> Vector<T, N>::project_onto(const Vector& rhs) const {
-    compute_type denom = rhs.squared_norm();
-    if (denom < TOLERANCE * TOLERANCE) {
-        throw std::domain_error("Cannot project onto zero vector");
-    }
-
-    compute_type scale = dot(rhs) / denom;
-    return rhs * static_cast<T>(scale);
-}
-
-template <typename T, std::size_t N>
-Vector<T, N> Vector<T, N>::reject_from(const Vector& rhs) const {
-    return *this - project_onto(rhs);
-}
-
-template <typename T, std::size_t N>
-Vector<T, N> Vector<T, N>::reflect_about(const Vector& normal) const {
-    Vector n = normal.normalize();
-    compute_type dot_product = dot(n);
-    return *this - n * static_cast<T>(2 * dot_product);
-}
-
-// ============================================================================
-// Dimension-Specific Operations (2D)
-// ============================================================================
-
-template <typename T, std::size_t N>
-template<typename U>
-std::enable_if_t<N == 2, Vector<T, N>> Vector<T, N>::perp() const {
-    static_assert(N == 2, "perp() requires a 2D vector");
-    return Vector({-data_[1], data_[0]});
-}
-
-template <typename T, std::size_t N>
-template<typename U>
-std::enable_if_t<N == 2, typename Vector<T, N>::compute_type> 
-Vector<T, N>::cross(const Vector& rhs) const {
-    static_assert(N == 2, "cross() for scalar result requires a 2D vector");
-    return static_cast<compute_type>(data_[0]) * static_cast<compute_type>(rhs.data_[1]) - 
-           static_cast<compute_type>(data_[1]) * static_cast<compute_type>(rhs.data_[0]);
-}
-
-// ============================================================================
-// Dimension-Specific Operations (3D)
-// ============================================================================
-
-template <typename T, std::size_t N>
-template<typename U>
-std::enable_if_t<N == 3, Vector<T, N>> 
-Vector<T, N>::vector_product(const Vector& rhs) const {
-    static_assert(N == 3, "vector_product() requires a 3D vector");
-    
-    return Vector({
-        data_[1] * rhs.data_[2] - data_[2] * rhs.data_[1],
-        data_[2] * rhs.data_[0] - data_[0] * rhs.data_[2],
-        data_[0] * rhs.data_[1] - data_[1] * rhs.data_[0]
-    });
-}
-
-template <typename T, std::size_t N>
-template<typename U>
-std::enable_if_t<N == 3, typename Vector<T, N>::compute_type> 
-Vector<T, N>::triple_scalar_product(const Vector& b, const Vector& c) const {
-    static_assert(N == 3, "triple_scalar_product() requires 3D vectors");
-    
-    // Compute (a · (b × c)) more efficiently
-    // This is equivalent to the determinant of the 3×3 matrix [a b c]
-    return static_cast<compute_type>(data_[0]) * 
-           (static_cast<compute_type>(b.data_[1]) * static_cast<compute_type>(c.data_[2]) - 
-            static_cast<compute_type>(b.data_[2]) * static_cast<compute_type>(c.data_[1])) +
-           static_cast<compute_type>(data_[1]) * 
-           (static_cast<compute_type>(b.data_[2]) * static_cast<compute_type>(c.data_[0]) - 
-            static_cast<compute_type>(b.data_[0]) * static_cast<compute_type>(c.data_[2])) +
-           static_cast<compute_type>(data_[2]) * 
-           (static_cast<compute_type>(b.data_[0]) * static_cast<compute_type>(c.data_[1]) - 
-            static_cast<compute_type>(b.data_[1]) * static_cast<compute_type>(c.data_[0]));
+    return true;
 }
 
 #endif // VECTOR_TPP
