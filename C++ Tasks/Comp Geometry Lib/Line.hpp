@@ -17,4 +17,15 @@ struct Line {
     Line& operator=(Line&&) noexcept = default;
 };
 
+
+template <typename T, std::size_t N>
+bool intersect(const Line<T, N>& line1, const Line<T, N>& line2) {
+    using Vector = Vector<T,N>;
+
+    Vector directional1(line1.p2_, line1.p1_);
+    Vector directional2(line2.p2_, line2.p1_);
+
+    return directional1.parallel(directional2);
+}
+
 #endif // LINE_HPP
