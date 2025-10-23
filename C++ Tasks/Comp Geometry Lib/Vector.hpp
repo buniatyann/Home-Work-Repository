@@ -45,6 +45,8 @@ public:
     Vector& operator/=(T scalar);
     Vector operator*(T scalar) const;
     Vector operator/(T scalar) const;
+    bool operator==(const Vector& other) const;
+    bool operator!=(const Vector& other) const;
 
     T dot(const Vector& other) const;
     T cross(const Vector& other) const;

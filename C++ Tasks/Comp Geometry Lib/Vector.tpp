@@ -81,13 +81,13 @@ Vector<T, N>& Vector<T, N>::operator=(Vector&& other) noexcept {
 template <typename T, std::size_t N>
 coord_t<T>& Vector<T, N>::operator[](std::size_t idx) {
     assert(idx < N && "Index out of bounds");
-    return data[idx];
+    return data.at(idx);
 }
 
 template <typename T, std::size_t N>
 const coord_t<T>& Vector<T, N>::operator[](std::size_t idx) const {
     assert(idx < N && "Index out of bounds");
-    return data[idx];
+    return data.at(idx);
 }
 
 template <typename T, std::size_t N>
@@ -176,6 +176,22 @@ Vector<T, N> Vector<T, N>::operator/(T scalar) const {
 }
 
 template <typename T, std::size_t N>
+bool Vector<T, N>::operator==(const Vector<T, N>& other) const {
+    for (std::size_t i = 0; i < N; ++i) {
+        if (data[i] != other[i]) {
+            return false;
+        }
+    }
+
+    return true;
+} 
+
+template <typename T, std::size_t N>
+bool Vector<T, N>::operator!=(const Vector<T, N>& other) const {
+    return !(*this == other);
+} 
+
+template <typename T, std::size_t N>
 T Vector<T, N>::dot(const Vector& other) const {
     T result = T{};
     for (std::size_t i = 0; i < N; ++i) {
@@ -213,8 +229,10 @@ double Vector<T, N>::angle_between(const Vector& other) const {
     if (len1 == 0 || len2 == 0) {
         return 0.0;
     }
+
     double cos_theta = dot_prod / (len1 * len2);
     cos_theta = std::max(-1.0, std::min(1.0, cos_theta));
+    
     return std::acos(cos_theta);
 }
 
