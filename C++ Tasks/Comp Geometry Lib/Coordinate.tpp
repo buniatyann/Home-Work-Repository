@@ -198,6 +198,7 @@ template <typename T>
 coord_t<T> operator/(T scalar, const coord_t<T>& coord) {
     static_assert(!std::is_integral_v<T> || coord.value != 0, "Division by zero for integral types");
     assert(coord.value != 0 && "Division by zero");
+    
     return coord_t<T>(scalar / coord.value);
 }
 
