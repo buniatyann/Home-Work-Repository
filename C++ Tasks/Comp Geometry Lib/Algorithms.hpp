@@ -29,7 +29,7 @@ namespace algo {
         // Lambda to check if the turn A -> B -> C is counter-clockwise
         auto isCounterClockwiseTurn = [](const Point<T, N>& A, const Point<T, N>& B, const Point<T, N>& C) -> bool {
             return Vector<T, N>(A, B).cross(Vector<T, N>(A, C)) > 0;
-            };
+        };
 
         // Two segments AB and CD intersect if and only if:
         // - Points C and D are on different sides of segment AB
@@ -90,7 +90,7 @@ namespace algo {
         Vector BA(A, B);
         Vector DC(C, D);
         Vector CA(A, C);
-        
+
         // if BA and DC are parallel
         if (BA.cross(DC) == 0) {
             // they're parallel, check if they are colinear
@@ -208,49 +208,49 @@ namespace algo {
                                 Intersection of 2D ray and line
 ================================================================================================================
 */
-    template <typename T, std::size_t N>
-    bool intersect(const Ray<T, N>& AB, const Line<T, N>& CD) {
-        using Vector = Vector<T, N>;
-        auto A = AB.p1_; // start point of a ray
-        auto B = AB.p2_; // end point of a ray
-        auto C = CD.p1_;
-        auto D = CD.p2_;
+template <typename T, std::size_t N>
+bool intersect(const Ray<T, N>& AB, const Line<T, N>& CD) {
+    using Vector = Vector<T, N>;
+    auto A = AB.p1_; // start point of a ray
+    auto B = AB.p2_; // end point of a ray
+    auto C = CD.p1_;
+    auto D = CD.p2_;
 
-        Vector BA(A, B); // A -> B
-        Vector DC(C, D); // C -> D
-        Vector CA(A, C); // A -> C
+    Vector BA(A, B); // A -> B
+    Vector DC(C, D); // C -> D
+    Vector CA(A, C); // A -> C
 
-        auto denom = DC.cross(BA);
-        // DC and BA are parallel (could be collinear or disjoint)
-        if (denom == 0) {
-            return BA.cross(CA) == 0; // Collinear => intersect (means C lies on a line), otherwise false
-        }
-
-        auto s = CA.cross(BA) / denom;
-        return s >= 0;
+    auto denom = DC.cross(BA);
+    // DC and BA are parallel (could be collinear or disjoint)
+    if (denom == 0) {
+        return BA.cross(CA) == 0; // Collinear => intersect (means C lies on a line), otherwise false
     }
 
-    template <typename T, std::size_t N>
-    bool intersect(const Line<T, N>& CD, const Ray<T, N>& AB) {
-        using Vector = Vector<T, N>;
-        auto A = AB.p1_; // start point of a ray
-        auto B = AB.p2_; // end point of a ray
-        auto C = CD.p1_;
-        auto D = CD.p2_;
+    auto s = CA.cross(BA) / denom;
+    return s >= 0;
+}
 
-        Vector BA(A, B); // A -> B
-        Vector DC(C, D); // C -> D
-        Vector CA(A, C); // A -> C
+template <typename T, std::size_t N>
+bool intersect(const Line<T, N>& CD, const Ray<T, N>& AB) {
+    using Vector = Vector<T, N>;
+    auto A = AB.p1_; // start point of a ray
+    auto B = AB.p2_; // end point of a ray
+    auto C = CD.p1_;
+    auto D = CD.p2_;
 
-        auto denom = DC.cross(BA);
-        // DC and BA are parallel (could be collinear or disjoint)
-        if (denom == 0) {
-            return BA.cross(CA) == 0; // Collinear => intersect (means C lies on a line), otherwise false
-        }
+    Vector BA(A, B); // A -> B
+    Vector DC(C, D); // C -> D
+    Vector CA(A, C); // A -> C
 
-        auto s = CA.cross(BA) / denom;
-        return s >= 0;
+    auto denom = DC.cross(BA);
+    // DC and BA are parallel (could be collinear or disjoint)
+    if (denom == 0) {
+        return BA.cross(CA) == 0; // Collinear => intersect (means C lies on a line), otherwise false
     }
+
+    auto s = CA.cross(BA) / denom;
+    return s >= 0;
+}
 
 /*
 ================================================================================================================
@@ -258,71 +258,71 @@ namespace algo {
 ================================================================================================================
 */
 
-   template <typename T, std::size_t N>
-   bool intersect(const Segment<T, N>& AB, const Ray<T, N>& CD) {
-       using Vector = Vector<T, N>;
-       auto A = AB.p1_;
-       auto B = AB.p2_;
-       auto C = CD.p1_;
-       auto D = CD.p2_;
+    template <typename T, std::size_t N>
+    bool intersect(const Segment<T, N>& AB, const Ray<T, N>& CD) {
+        using Vector = Vector<T, N>;
+        auto A = AB.p1_;
+        auto B = AB.p2_;
+        auto C = CD.p1_;
+        auto D = CD.p2_;
 
-       Vector BA(A, B); // A -> B
-       Vector DC(C, D); // C -> D
-       Vector CA(A, C); // A -> C
+        Vector BA(A, B); // A -> B
+        Vector DC(C, D); // C -> D
+        Vector CA(A, C); // A -> C
 
-       auto denum = DC.cross(BA);
-       if (denum == 0) {
-           // Ray and Segment are parallel
-           if (DC.cross(CA) != 0) {
-               return false; // not colinear
-           }
+        auto denum = DC.cross(BA);
+        if (denum == 0) {
+            // Ray and Segment are parallel
+            if (DC.cross(CA) != 0) {
+                return false; // not colinear
+            }
 
-           // they are parallel, check projection overlap
-           auto rayDot = DC.dot(DC);
-           auto t0 = CA.dot(DC) / rayDot;
-           auto t1 = Vector(C, B).dot(DC) / rayDot;
+            // they are parallel, check projection overlap
+            auto rayDot = DC.dot(DC);
+            auto t0 = CA.dot(DC) / rayDot;
+            auto t1 = Vector(C, B).dot(DC) / rayDot;
 
-           return (t1 >= 0 || t0 >= 0) && (std::max(t0, t1) > std::min(t0, t1));
-       }
+            return (t1 >= 0 || t0 >= 0) && (std::max(t0, t1) > std::min(t0, t1));
+        }
 
-       auto t = CA.cross(DC) / denum;
-       auto u = CA.cross(BA) / denum;
+        auto t = CA.cross(DC) / denum;
+        auto u = CA.cross(BA) / denum;
 
-       return (t >= 0 && t <= 1) && (u >= 0);
-   }
+        return (t >= 0 && t <= 1) && (u >= 0);
+    }
 
-   template <typename T, std::size_t N>
-   bool intersect(const Ray<T, N>& CD, const Segment<T, N>& AB) {
-       using Vector = Vector<T, N>;
-       auto A = AB.p1_;
-       auto B = AB.p2_;
-       auto C = CD.p1_;
-       auto D = CD.p2_;
+    template <typename T, std::size_t N>
+    bool intersect(const Ray<T, N>& CD, const Segment<T, N>& AB) {
+        using Vector = Vector<T, N>;
+        auto A = AB.p1_;
+        auto B = AB.p2_;
+        auto C = CD.p1_;
+        auto D = CD.p2_;
 
-       Vector BA(A, B); // A -> B
-       Vector DC(C, D); // C -> D
-       Vector CA(A, C); // A -> C
+        Vector BA(A, B); // A -> B
+        Vector DC(C, D); // C -> D
+        Vector CA(A, C); // A -> C
 
-       auto denum = DC.cross(BA);
-       if (denum == 0) {
-           // Ray and Segment are parallel
-           if (DC.cross(CA) != 0) {
-               return false; // not colinear
-           }
+        auto denum = DC.cross(BA);
+        if (denum == 0) {
+            // Ray and Segment are parallel
+            if (DC.cross(CA) != 0) {
+                return false; // not colinear
+            }
 
-           // they are parallel, check projection overlap
-           auto rayDot = DC.dot(DC);
-           auto t0 = CA.dot(DC) / rayDot;
-           auto t1 = Vector(C, B).dot(DC) / rayDot;
+            // they are parallel, check projection overlap
+            auto rayDot = DC.dot(DC);
+            auto t0 = CA.dot(DC) / rayDot;
+            auto t1 = Vector(C, B).dot(DC) / rayDot;
 
-           return (t1 >= 0 || t0 >= 0) && (std::max(t0, t1) > std::min(t0, t1));
-       }
+            return (t1 >= 0 || t0 >= 0) && (std::max(t0, t1) > std::min(t0, t1));
+        }
 
-       auto t = CA.cross(DC) / denum;
-       auto u = CA.cross(BA) / denum;
+        auto t = CA.cross(DC) / denum;
+        auto u = CA.cross(BA) / denum;
 
-       return (t >= 0 && t <= 1) && (u >= 0);
-   }
+        return (t >= 0 && t <= 1) && (u >= 0);
+    }
 
 } // namespace algo
 
