@@ -2,16 +2,8 @@
 #define DOUBLY_LINKED_LIST_HPP
 
 #include "../../Interface/IList.hpp"
+#include "../../Node/Double Linked/DLLNode.hpp"
 #include <utility>
-
-template <typename T>
-struct Node {
-    T val;
-    Node<T>* next;
-    Node<T>* prev;
-    Node(const T& val, Node* next = nullptr, Node* prev = nullptr);
-    Node(T&& val, Node* next = nullptr, Node* prev = nullptr);
-};
 
 template <typename T>
 class List : public IList<T> {
@@ -44,10 +36,15 @@ public:
     std::size_t find(const T& value) override;
     const T& at(std::size_t ind) override;
 
+    const INode<T>* frontNode() const override;
+    INode<T>* frontNode() override;
+    const INode<T>* backNode() const override;
+    INode<T>* backNode() override;
+
 private:
     std::size_t size_;
-    Node<T>* front_;
-    Node<T>* back_;
+    DLLNode<T>* front_;
+    DLLNode<T>* back_;
 };
 
 #include "List.tpp"

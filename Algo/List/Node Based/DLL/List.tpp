@@ -4,14 +4,6 @@
 #include "List.hpp"
 
 template <typename T>
-Node<T>::Node(const T& val, Node* next, Node* prev) 
-    : val(val), next(next), prev(prev) {}
-
-template <typename T>
-Node<T>::Node(T&& val, Node* next, Node* prev) 
-    : val(std::move(val)), next(next), prev(prev) {}
-
-template <typename T>
 List<T>::List(std::size_t size) : size_(0), front_(nullptr), back_(nullptr) {
     for (std::size_t i = 0; i < size; ++i) {
         push_back(T());
@@ -20,10 +12,10 @@ List<T>::List(std::size_t size) : size_(0), front_(nullptr), back_(nullptr) {
 
 template <typename T>
 List<T>::List(const List& lst) : size_(0), front_(nullptr), back_(nullptr) {
-    Node<T>* current = lst.front_;
+    DLLNode<T>* current = lst.front_;
     while (current) {
-        push_back(current->val);
-        current = current->next;
+        push_back(current->val());
+        current = static_cast<DLLNode<T>*>(current->next); // next is DLLNode<T>*
     }
 }
 
@@ -31,13 +23,13 @@ template <typename T>
 List<T>& List<T>::operator=(const List& lst) {
     if (this != &lst) {
         clear();
-        Node<T>* current = lst.front_;
+        DLLNode<T>* current = lst.front_;
         while (current) {
-            push_back(current->val);
-            current = current->next;
+            push_back(current->val());
+            current = dynamic_cast<DLLNode<T>*>(current->next);
         }
     }
-    
+
     return *this;
 }
 
@@ -59,7 +51,7 @@ List<T>& List<T>::operator=(List&& rhs) noexcept {
         rhs.front_ = nullptr;
         rhs.back_ = nullptr;
     }
-    
+
     return *this;
 }
 
@@ -77,56 +69,56 @@ void List<T>::insert(const T& value, std::size_t pos) {
         push_front(value);
         return;
     }
-    
-    Node<T>* current = front_;
+
+    DLLNode<T>* current = front_;
     for (std::size_t i = 0; i < pos - 1; ++i) {
-        current = current->next;
+        current = static_cast<DLLNode<T>*>(current->next); // next is DLLNode<T>*
     }
-    
-    Node<T>* new_node = new Node<T>(value, current->next, current);
+
+    DLLNode<T>* new_node = new DLLNode<T>(value, current->next, current);
     if (current->next) {
         current->next->prev = new_node;
     }
-    
+
     current->next = new_node;
     if (new_node->next == nullptr) {
         back_ = new_node;
     }
-    
+
     ++size_;
 }
 
 template <typename T>
-void List<T>::insert(T&& value, std::size_t pos) {
+void List<T>::insert(const T& value, std::size_t pos) {
     if (pos > size_) {
         throw std::out_of_range("insert: pos > size");
     }
     if (pos == 0) {
-        push_front(std::move(value));
+        push_front(value);
         return;
     }
-    
-    Node<T>* current = front_;
+ 
+    DLLNode<T>* current = front_;
     for (std::size_t i = 0; i < pos - 1; ++i) {
-        current = current->next;
+        current = static_cast<DLLNode<T>*>(current->next); // next is DLLNode<T>*
     }
-    
-    Node<T>* new_node = new Node<T>(std::move(value), current->next, current);
+ 
+    DLLNode<T>* new_node = new DLLNode<T>(value, current->next, current);
     if (current->next) {
         current->next->prev = new_node;
     }
-    
+ 
     current->next = new_node;
     if (new_node->next == nullptr) {
         back_ = new_node;
     }
-    
+ 
     ++size_;
 }
 
 template <typename T>
 void List<T>::push_back(const T& value) {
-    Node<T>* new_node = new Node<T>(value, nullptr, back_);
+    DLLNode<T>* new_node = new DLLNode<T>(value, nullptr, back_);
     if (!front_) {
         front_ = back_ = new_node;
     } 
@@ -140,7 +132,7 @@ void List<T>::push_back(const T& value) {
 
 template <typename T>
 void List<T>::push_back(T&& value) {
-    Node<T>* new_node = new Node<T>(std::move(value), nullptr, back_);
+    DLLNode<T>* new_node = new DLLNode<T>(std::move(value), nullptr, back_);
     if (!front_) {
         front_ = back_ = new_node;
     } 
@@ -148,37 +140,37 @@ void List<T>::push_back(T&& value) {
         back_->next = new_node;
         back_ = new_node;
     }
-    
+ 
     ++size_;
 }
 
 template <typename T>
 void List<T>::push_front(const T& value) {
-    Node<T>* new_node = new Node<T>(value, front_, nullptr);
+    DLLNode<T>* new_node = new DLLNode<T>(value, front_, nullptr);
     if (front_) {
         front_->prev = new_node;
     }
-    
+ 
     front_ = new_node;
     if (!back_) {
         back_ = new_node;
     }
-    
+ 
     ++size_;
 }
 
 template <typename T>
 void List<T>::push_front(T&& value) {
-    Node<T>* new_node = new Node<T>(std::move(value), front_, nullptr);
+    DLLNode<T>* new_node = new DLLNode<T>(std::move(value), front_, nullptr);
     if (front_) {
         front_->prev = new_node;
     }
-    
+ 
     front_ = new_node;
     if (!back_) {
         back_ = new_node;
     }
-    
+ 
     ++size_;
 }
 
@@ -193,9 +185,9 @@ void List<T>::pop_back() {
         size_ = 0;
         return;
     }
-    
-    Node<T>* temp = back_;
-    back_ = back_->prev;
+
+    DLLNode<T>* temp = back_;
+    back_ = dynamic_cast<DLLNode<T>*>(back_->prev);
     back_->next = nullptr;
     delete temp;
     --size_;
@@ -206,9 +198,9 @@ void List<T>::pop_front() {
     if (size_ == 0) {
         throw std::runtime_error("pop_front: empty list");
     }
-    
-    Node<T>* temp = front_;
-    front_ = front_->next;
+
+    DLLNode<T>* temp = front_;
+    front_ = dynamic_cast<DLLNode<T>*>(front_->next);
     if (front_) {
         front_->prev = nullptr;
     } 
@@ -222,10 +214,10 @@ void List<T>::pop_front() {
 
 template <typename T>
 void List<T>::clear() {
-    Node<T>* current = front_;
+    DLLNode<T>* current = front_;
     while (current) {
-        Node<T>* temp = current;
-        current = current->next;
+        DLLNode<T>* temp = current;
+        current = dynamic_cast<DLLNode<T>*>(current->next);
         delete temp;
     }
     
@@ -239,7 +231,7 @@ const T& List<T>::front() const {
         throw std::runtime_error("front: empty list");
     }
     
-    return front_->val;
+    return front_->val();
 }
 
 template <typename T>
@@ -248,7 +240,7 @@ const T& List<T>::back() const {
         throw std::runtime_error("back: empty list");
     }
     
-    return back_->val;
+    return back_->val();
 }
 
 template <typename T>
@@ -256,8 +248,8 @@ T& List<T>::front() {
     if (!front_) {
         throw std::runtime_error("front: empty list");
     }
-    
-    return front_->val;
+ 
+    return front_->val();
 }
 
 template <typename T>
@@ -265,23 +257,23 @@ T& List<T>::back() {
     if (!back_) {
         throw std::runtime_error("back: empty list");
     }
-    
-    return back_->val;
+ 
+    return back_->val();
 }
 
 template <typename T>
 std::size_t List<T>::find(const T& value) {
-    Node<T>* current = front_;
+    DLLNode<T>* current = front_;
     std::size_t index = 0;
     while (current) {
-        if (current->val == value) {
+        if (current->val() == value) {
             return index;
         }
-    
-        current = current->next;
+ 
+        current = dynamic_cast<DLLNode<T>*>(current->next);
         ++index;
     }
-    
+ 
     return size_;
 }
 
@@ -291,12 +283,32 @@ const T& List<T>::at(std::size_t ind) {
         throw std::out_of_range("at: ind >= size");
     }
 
-    Node<T>* current = front_;
+    DLLNode<T>* current = front_;
     for (std::size_t i = 0; i < ind; ++i) {
-        current = current->next;
+        current = dynamic_cast<DLLNode<T>*>(current->next);
     }
+ 
+    return current->val();
+}
 
-    return current->val;
+template <typename T>
+const INode<T>* List<T>::frontNode() const {
+    return front_;
+}
+
+template <typename T>
+INode<T>* List<T>::frontNode() {
+    return front_;
+}
+
+template <typename T>
+const INode<T>* List<T>::backNode() const {
+    return back_;
+}
+
+template <typename T>
+INode<T>* List<T>::backNode() {
+    return back_;
 }
 
 #endif // DOUBLE_LIST_TPP
