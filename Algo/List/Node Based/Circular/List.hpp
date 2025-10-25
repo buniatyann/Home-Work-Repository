@@ -1,7 +1,8 @@
 #ifndef CIRCULAR_LIST_HPP
 #define CIRCULAR_LIST_HPP
 
-#include "IList.hpp"
+#include "../../Interface/IList.hpp"
+#include "../../Node/Single Linked/SLLNode.hpp"
 #include <cassert>
 
 template <typename T>
@@ -29,23 +30,17 @@ public:
     T& back() override;
     std::size_t size() const noexcept override;
     bool empty() const noexcept override;
-    std::size_t find(const T& value) override;
-    const T& at(std::size_t ind) override;
+    std::size_t find(const T& value) const override;
+    const T& at(std::size_t ind) const override;
+    const INode<T>* frontNode() const override;
+    INode<T>* frontNode() override;
+    const INode<T>* backNode() const override;
+    INode<T>* backNode() override;
 
 private:
-    struct Node {
-        T data;
-        Node* next;
-        Node* prev;
-        Node(const T& value, Node* next = nullptr, Node* prev = nullptr);
-        Node(T&& value, Node* next = nullptr, Node* prev = nullptr);
-    };
-
-    Node* head;
-    Node* tail;
-    std::size_t list_size;
-
-    Node* get_node(std::size_t pos) const;
+    SLLNode<T>* front_;
+    SLLNode<T>* back_;
+    std::size_t size_;
 };
 
 #include "List.tpp"
