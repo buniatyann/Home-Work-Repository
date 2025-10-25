@@ -19,6 +19,10 @@ struct SLLNode : INode<T> {
     ~SLLNode() override {
         next = nullptr;
     }
+    
+    INode<T>* next() override {
+        return next_;
+    }
 
     T val_;
     SLLNode<T>* next;

@@ -23,6 +23,10 @@ struct DLLNode : INode<T> {
         next = nullptr;
     }
 
+    INode<T>* next() override {
+        return next_;
+    }
+
     T val_;
     INode<T>* next;
     INode<T>* prev;

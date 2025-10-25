@@ -8,6 +8,7 @@ struct INode {
     virtual ~INode() = default;
     virtual const T& val() const = 0;
     virtual T& val() = 0;
+    virtual INode<T>* next() = 0;
 };
 
 #endif // INODE_HPP
