@@ -5,6 +5,8 @@
 #include "Segment.hpp"
 #include "Line.hpp"
 #include "Ray.hpp"
+#include "BoundingBox.hpp"
+#include "Polygon.hpp"
 
 namespace algo {
 /*
@@ -323,6 +325,38 @@ bool intersect(const Line<T, N>& CD, const Ray<T, N>& AB) {
 
         return (t >= 0 && t <= 1) && (u >= 0);
     }
+
+/*
+================================================================================================================
+                                Intersection of 2 bounding boxes
+================================================================================================================
+*/
+    template <typename T, std::size_t N>
+    bool intersect(const BoundingBox<T, N>& a, const BoundingBox<T, N>& b) {
+        if (!a.valid || !b.valid) { 
+            return false;
+        }
+
+        if constexpr (N == 2) {
+            return !(a.max[0] < b.min[0] || a.min[0] > b.max[0] ||
+                    a.max[1] < b.min[1] || a.min[1] > b.max[1]);
+        } 
+        else if constexpr (N == 3) {
+            return !(a.max[0] < b.min[0] || a.min[0] > b.max[0] ||
+                    a.max[1] < b.min[1] || a.min[1] > b.max[1] ||
+                    a.max[2] < b.min[2] || a.min[2] > b.max[2]);
+        } 
+        else {
+            for (std::size_t i = 0; i < N; ++i) {
+                if (a.max[i] < b.min[i] || a.min[i] > b.max[i]) { 
+                    return false;
+                }
+            }
+        
+            return true;
+        }
+    }
+
 
 } // namespace algo
 
