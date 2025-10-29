@@ -7,6 +7,7 @@
 #include "Ray.hpp"
 #include "BoundingBox.hpp"
 #include "Polygon.hpp"
+#include <set>
 
 namespace algo {
 /*
@@ -332,31 +333,155 @@ bool intersect(const Line<T, N>& CD, const Ray<T, N>& AB) {
 ================================================================================================================
 */
     template <typename T, std::size_t N>
-    bool intersect(const BoundingBox<T, N>& a, const BoundingBox<T, N>& b) {
-        if (!a.valid || !b.valid) { 
+    constexpr bool intersect(const BoundingBox<T, N>& a, const BoundingBox<T, N>& b) {
+        if (a.empty() || b.empty()) {
             return false;
         }
 
-        if constexpr (N == 2) {
-            return !(a.max[0] < b.min[0] || a.min[0] > b.max[0] ||
-                    a.max[1] < b.min[1] || a.min[1] > b.max[1]);
-        } 
-        else if constexpr (N == 3) {
-            return !(a.max[0] < b.min[0] || a.min[0] > b.max[0] ||
-                    a.max[1] < b.min[1] || a.min[1] > b.max[1] ||
-                    a.max[2] < b.min[2] || a.min[2] > b.max[2]);
-        } 
-        else {
-            for (std::size_t i = 0; i < N; ++i) {
-                if (a.max[i] < b.min[i] || a.min[i] > b.max[i]) { 
-                    return false;
-                }
+        for (std::size_t i = 0; i < N; ++i) {
+            if (a.min()[i] > b.max()[i] || b.min()[i] > a.max()[i]) {
+                return false;
             }
-        
-            return true;
         }
+
+        return true;
     }
 
+/*
+================================================================================================================
+                                Intersection of 2 bounding boxes
+================================================================================================================
+*/
+    template <typename T, std::size_t N>
+    bool intersect(const Polygon<T, N>& P1, const Polygon<T, N>& P2) {
+        static_assert(N == 2, "Polygon intersection is only defined for 2D (N == 2)");
+
+        if (!intersect(P1.boundingBox(), P2.boundingBox())) {
+            return false;
+        }
+        if (P1.isConvex() && P2.isConvex()) {
+            // TODO: implement the Green's algorithm for polygon intersection because of O(m + n)
+            // but for now  only brute force approach is implemented
+            for (const auto& e1 : P1.edges()) {
+                for (const auto& e2 : P2.edges()) {
+                    if (intersect(e1, e2)) {
+                        return true;
+                    }
+                }
+            }
+
+            // one polygon completely lies in the other
+            if (!P2.empty() && P1.contains(P2[0])) {
+                return true;
+            }
+            else if (!P1.empty() && P2.contains(P1[0])) {
+                return true;
+            }
+
+            return false;
+        }
+
+        // General case: Sweep line algorithm
+        const auto& edges1 = P1.edges();
+        const auto& edges2 = P2.edges();
+        if (edges1.emtpy() || edges2.emtpy()) {
+            return false;
+        }
+
+        struct Event {
+            coord_t<T> x;
+            std::size_t segIdx;
+            bool isStart;
+            std::size_t polyId;
+            bool operator<(const Event& other) const noexcept {
+                if (x != other.x) {
+                    return x < other.x;
+                }
+                if (isStart != other.isStart) {
+                    return isStart > other.isStart;
+                }
+
+                return polyId < other.polyId;
+            }
+        }
+
+        std::vector<Event> events;
+        events.reserve(edges1.size() * 2 + edges2.size() * 2);
+        auto addEdge = [&events](const Segment<T, N>& s, std::size_t i, std::size_t poly) {
+            const auto& a = s.p1_;
+            const auto& b = s.p2_;
+            bool aLeft = a[0] < b[0] || (a[0] == b[0] && a[1] < b[1]);
+            events.push_back({aLeft ? a[0] : b[0], i, true, poly});
+            events.push_back({aLeft ? b[0] : a[0], i, false, poly});
+        };
+
+        for (std::size_t i = 0; i < edges1.size(); ++i) {
+            addEdge(edges1[i], i, 0);
+        }
+        
+        for (std::size_t i = 0; i < edges2.size(); ++i) {
+            addEdge(edges2[i], i, 1);
+        }
+
+        std::sort(events.begin(), events.end());
+        struct ActiveSeg {
+            std::size_t ind;
+            coord_t<T> yCurr;
+            const Segment<T, N>* seg;
+            bool operator<(const ActiveSeg& other) const noexcept {
+                return yCurr < other.yCurr;
+            }
+        };
+
+        std::set<ActiveSeg> active;
+        auto getY = [&active](const Segment<T, N>& s, coord_t<T> x) -> coord_t<T> {
+            const auto& a = s.p1_;
+            const auto& b = s.p2_;
+            if (a[0] == b[0]) {
+                return a[1];
+            }
+
+            coord_t<T> t = (x - a[0]) / (b[0] - a[0]);
+            return a[1] + t * (b[1] - a[1]);
+        };
+
+        for (const auto& event : events) {
+            const auto& seg = (event.polyId == 0 ? edges1 : edges2)[event.segId];
+            if (event.isStart) {
+                active.insert({ev.segId, getY(seg, event.x), &seg});
+            }
+            else {
+                active.erase({ev.segId, getY(seg, event.x), &seg});
+            }
+
+            auto it = active.find({event.segId, getY(seg, event.x), &seg});
+            if (it == active.end()) {
+                continue;
+            }
+
+            auto prev = it;
+            if (prev != active.begin()) {
+                --prev;
+                if (intersect(*prev->seg, seg)) {
+                    return true;
+                }
+            }
+
+            auto next = std::next(it);
+            if (next != active.end() && intersect(*next->seg, seg)) {
+                return true;
+            }
+        }
+
+        if (!P2.empty() && P1.contains(P2[0])) {
+            return true;
+        }
+        else if (!P1.empty() && P2.contains(P1[0])) {
+            return true;
+        }
+
+        return false;
+    }
 
 } // namespace algo
 
