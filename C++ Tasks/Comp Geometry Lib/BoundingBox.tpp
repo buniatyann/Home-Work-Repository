@@ -2,75 +2,117 @@
 #define BOUNDINGBOX_TPP
 
 #include "BoundingBox.hpp"
-#include <limits>
-#include <cassert>
-#include <algorithm>
 
 template <typename T, std::size_t N>
-BoundingBox<T, N>::BoundingBox()
-    : valid(false)
-{
-    for (std::size_t i = 0; i < N; ++i) {
-        min[i] = std::numeric_limits<T>::max();
-        max[i] = std::numeric_limits<T>::lowest();
-    }
+BoundingBox<T, N>::BoundingBox() {
+    reset();
 }
 
 template <typename T, std::size_t N>
-BoundingBox<T, N>::BoundingBox(const Point& p)
-    : BoundingBox()
-{
-    expand(p);
+BoundingBox<T, N>::BoundingBox(const BoundingBox& other)
+    : min_(other.min_), max_(other.max_) {}
+
+template <typename T, std::size_t N>
+BoundingBox<T, N>& BoundingBox<T, N>::operator=(const BoundingBox& other) {
+    if (this != &other) {
+        min_ = other.min_;
+        max_ = other.max_;
+    }
+
+    return *this;
+}
+
+template <typename T, std::size_t N>
+BoundingBox<T, N>::BoundingBox(BoundingBox&& other) noexcept
+    : min_(std::move(other.min_)), max_(std::move(other.max_)) {}
+
+template <typename T, std::size_t N>
+BoundingBox<T, N>& BoundingBox<T, N>::operator=(BoundingBox&& other) noexcept {
+    if (this != &other) {
+        min_ = std::move(other.min_);
+        max_ = std::move(other.max_);
+    }
+    
+    return *this;
 }
 
 template <typename T, std::size_t N>
 void BoundingBox<T, N>::expand(const Point& p) {
-    if (!valid) {
-        min = p.data;
-        max = p.data;
-        valid = true;
-    } 
-    else {
-        for (std::size_t i = 0; i < N; ++i) {
-            if (p[i] < min[i]) { 
-                min[i] = p[i];
-            }
-            if (p[i] > max[i]) {
-                max[i] = p[i];
-            }
-        }
+    for (std::size_t i = 0; i < N; ++i) {
+        min_[i] = std::min(min_[i], p[i]);
+        max_[i] = std::max(max_[i], p[i]);
     }
 }
 
 template <typename T, std::size_t N>
 void BoundingBox<T, N>::expand(const BoundingBox& other) {
-    if (!other.valid) {
-        return;
-    }
-    
-    if (!valid) {
-        *this = other;
-    } 
-    else {
-        for (std::size_t i = 0; i < N; ++i) {
-            if (other.min[i] < min[i]) {
-                min[i] = other.min[i];
-            }
-            if (other.max[i] > max[i]) {
-                max[i] = other.max[i];
-            }
-        }
+    for (std::size_t i = 0; i < N; ++i) {
+        min_[i] = std::min(min_[i], other.min_[i]);
+        max_[i] = std::max(max_[i], other.max_[i]);
     }
 }
 
 template <typename T, std::size_t N>
-bool BoundingBox<T, N>::contains(const Point& p) const {
-    if (!valid) {
-        return false;
+void BoundingBox<T, N>::reset() {
+    constexpr coord_t inf = std::numeric_limits<T>::has_infinity
+        ? std::numeric_limits<T>::infinity()
+        : std::numeric_limits<T>::max();
+
+    constexpr coord_t ninf = std::numeric_limits<T>::has_infinity
+        ? -std::numeric_limits<T>::infinity()
+        : std::numeric_limits<T>::lowest();
+
+    for (std::size_t i = 0; i < N; ++i) {
+        min_[i] = inf;
+        max_[i] = ninf;
+    }
+}
+
+template <typename T, std::size_t N>
+const typename BoundingBox<T, N>::Point& BoundingBox<T, N>::min() const {
+    return min_;
+}
+
+template <typename T, std::size_t N>
+const typename BoundingBox<T, N>::Point& BoundingBox<T, N>::max() const {
+    return max_;
+}
+
+template <typename T, std::size_t N>
+typename BoundingBox<T, N>::Point BoundingBox<T, N>::center() const {
+    Point c;
+    for (std::size_t i = 0; i < N; ++i) {
+        c[i] = (min_[i] + max_[i]) * coord_t{0.5};
     }
     
+    return c;
+}
+
+template <typename T, std::size_t N>
+typename BoundingBox<T, N>::Point BoundingBox<T, N>::size() const {
+    Point s;
     for (std::size_t i = 0; i < N; ++i) {
-        if (p[i] < min[i] || p[i] > max[i]) {
+        s[i] = max_[i] - min_[i];
+    }
+    
+    return s;
+}
+
+template <typename T, std::size_t N>
+bool BoundingBox<T, N>::empty() const {
+    for (std::size_t i = 0; i < N; ++i) {
+        if (min_[i] > max_[i]) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+template <typename T, std::size_t N>
+bool BoundingBox<T, N>::contains(const Point& p) const {
+    for (std::size_t i = 0; i < N; ++i) {
+        if (p[i] < min_[i] || p[i] > max_[i]) {
             return false;
         }
     }
@@ -79,35 +121,14 @@ bool BoundingBox<T, N>::contains(const Point& p) const {
 }
 
 template <typename T, std::size_t N>
-typename BoundingBox<T, N>::Point BoundingBox<T, N>::center() const {
-    assert(valid);
-    Point c;
+bool BoundingBox<T, N>::intersects(const BoundingBox& other) const {
     for (std::size_t i = 0; i < N; ++i) {
-        c[i] = (min[i] + max[i]) / T(2);
+        if (max_[i] < other.min_[i] || min_[i] > other.max_[i]) {
+            return false;
+        }
     }
-
-    return c;
+    
+    return true;
 }
 
-template <typename T, std::size_t N>
-typename BoundingBox<T, N>::Point BoundingBox<T, N>::size() const {
-    assert(valid);
-    Point s;
-    for (std::size_t i = 0; i < N; ++i) {
-        s[i] = max[i] - min[i];
-    }
-   
-    return s;
-}
-
-template <typename T, std::size_t N>
-void BoundingBox<T, N>::clear() {
-    for (std::size_t i = 0; i < N; ++i) {
-        min[i] = std::numeric_limits<T>::max();
-        max[i] = std::numeric_limits<T>::lowest();
-    }
-   
-    valid = false;
-}
-
-#endif // BOUNDING_BOX_TPP
+#endif

@@ -1,33 +1,49 @@
 #ifndef BOUNDINGBOX_HPP
 #define BOUNDINGBOX_HPP
 
-#include "Point.hpp"
 #include "Coordinate.hpp"
-#include <array>
-#include <cstddef>
+#include "Point.hpp"
+#include <type_traits>
+#include <algorithm>
+#include <limits>
+#include <cassert>
 
 template <typename T, std::size_t N>
-struct BoundingBox {
-    using Point = Point<T, N>;
+class BoundingBox {
+    static_assert(std::is_arithmetic_v<T>, "T must be an arithmetic type");
+    static_assert(N > 0, "Dimension must be > 0");
 
-    std::array<coord_t<T>, N> min;
-    std::array<coord_t<T>, N> max;
-    bool valid;
+public:
+    using Point   = Point<T, N>;
+    using coord_t = coord_t<T>;
 
     BoundingBox();
-    explicit BoundingBox(const Point& p);
+    BoundingBox(const BoundingBox& other);
+    BoundingBox& operator=(const BoundingBox& other);
+    BoundingBox(BoundingBox&& other) noexcept;
+    BoundingBox& operator=(BoundingBox&& other) noexcept;
 
     void expand(const Point& p);
     void expand(const BoundingBox& other);
+    void reset();
 
-    bool contains(const Point& p) const;
+    const Point& min() const;
+    const Point& max() const;
 
     Point center() const;
     Point size() const;
+    bool empty() const;
+    bool contains(const Point& p) const;
+    bool intersects(const BoundingBox& other) const;
 
-    void clear();
+private:
+    Point min_;
+    Point max_;
 };
+
+template <typename T>
+using BoundingBox2D = BoundingBox<T, 2>;
 
 #include "BoundingBox.tpp"
 
-#endif // BOUNDING_BOX_HPP
+#endif
