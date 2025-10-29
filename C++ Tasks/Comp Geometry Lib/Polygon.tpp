@@ -2,6 +2,7 @@
 #define POLYGON_TPP
 
 #include <algorithm>
+#include "Polygon.hpp"
 
 template <typename T, std::size_t N>
 Polygon<T, N>::Polygon(const Polygon& other)
