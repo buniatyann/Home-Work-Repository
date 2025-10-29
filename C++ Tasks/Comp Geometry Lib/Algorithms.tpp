@@ -7,6 +7,7 @@
 #include "Ray.hpp"
 #include "BoundingBox.hpp"
 #include "Polygon.hpp"
+#include "Algorithms.hpp"
 #include <set>
 
 namespace algo {
@@ -21,12 +22,12 @@ namespace algo {
     }*/
 
     template <typename T, std::size_t N>
-    bool intersect(const Segment<T, N>& seg1, const Segment<T, N>& seg2) {
+    bool intersect(const Segment<T, N>& AB, const Segment<T, N>& CD) noexcept {
         // Let segment 1 be AB, and segment 2 be CD
-        auto A = seg1.p1_;
-        auto B = seg1.p2_;
-        auto C = seg2.p1_;
-        auto D = seg2.p2_;
+        auto A = AB.p1_;
+        auto B = AB.p2_;
+        auto C = CD.p1_;
+        auto D = CD.p2_;
 
         // Lambda to check if the turn A -> B -> C is counter-clockwise
         auto isCounterClockwiseTurn = [](const Point<T, N>& A, const Point<T, N>& B, const Point<T, N>& C) -> bool {
@@ -46,7 +47,7 @@ namespace algo {
 ================================================================================================================
 */
     template <typename T, std::size_t N>
-    bool intersect(const Ray<T, N>& ray1, const Ray<T, N>& ray2) {
+    bool intersect(const Ray<T, N>& ray1, const Ray<T, N>& ray2) noexcept {
         auto epsilon = 1e-9;
 
         auto P0 = ray1.p1_;
@@ -83,12 +84,12 @@ namespace algo {
 ================================================================================================================
 */
     template <typename T, std::size_t N>
-    bool intersect(const Line<T, N>& line1, const Line<T, N>& line2) {
+    bool intersect(const Line<T, N>& AB, const Line<T, N>& CD) noexcept {
         using Vector = Vector<T, N>;
-        auto A = line1.p1_;
-        auto B = line1.p2_;
-        auto C = line2.p1_;
-        auto D = line2.p2_;
+        auto A = AB.p1_;
+        auto B = AB.p2_;
+        auto C = CD.p1_;
+        auto D = CD.p2_;
         Vector BA(A, B);
         Vector DC(C, D);
         Vector CA(A, C);
@@ -108,7 +109,7 @@ namespace algo {
 ================================================================================================================
 */
     template <typename T, std::size_t N>
-    bool intersect(const Line<T, N>& AB, const Segment<T, N>& CD) {
+    bool intersect(const Line<T, N>& AB, const Segment<T, N>& CD) noexcept {
         static_assert(N == 2, "Line - Segment intersection is only defined for 2D");
         //using Vector = Vector<T, N>;
         //// Line is represented by 2 points A and B
@@ -158,7 +159,7 @@ namespace algo {
     }
 
     template <typename T, std::size_t N>
-    bool intersect(const Segment<T, N>& CD, const Line<T, N>& AB) {
+    bool intersect(const Segment<T, N>& CD, const Line<T, N>& AB) noexcept {
         static_assert(N == 2, "Line - Segment intersection is only defined for 2D");
         //using Vector = Vector<T, N>;
         //// Line is represented by 2 points A and B
@@ -213,7 +214,7 @@ namespace algo {
 ================================================================================================================
 */
 template <typename T, std::size_t N>
-bool intersect(const Ray<T, N>& AB, const Line<T, N>& CD) {
+bool intersect(const Ray<T, N>& AB, const Line<T, N>& CD) noexcept {
     static_assert(N == 2, "Ray - Line intersection is only defined for 2D");
     using Vector = Vector<T, N>;
     auto A = AB.p1_; // start point of a ray
@@ -236,7 +237,7 @@ bool intersect(const Ray<T, N>& AB, const Line<T, N>& CD) {
 }
 
 template <typename T, std::size_t N>
-bool intersect(const Line<T, N>& CD, const Ray<T, N>& AB) {
+bool intersect(const Line<T, N>& CD, const Ray<T, N>& AB) noexcept {
     static_assert(N == 2, "Ray - Line intersection is only defined for 2D");
     using Vector = Vector<T, N>;
     auto A = AB.p1_; // start point of a ray
@@ -265,7 +266,7 @@ bool intersect(const Line<T, N>& CD, const Ray<T, N>& AB) {
 */
 
     template <typename T, std::size_t N>
-    bool intersect(const Segment<T, N>& AB, const Ray<T, N>& CD) {
+    bool intersect(const Segment<T, N>& AB, const Ray<T, N>& CD) noexcept {
         static_assert(N == 2, "Ray - Segment intersection is only defined for 2D");
         using Vector = Vector<T, N>;
         auto A = AB.p1_;
@@ -299,7 +300,7 @@ bool intersect(const Line<T, N>& CD, const Ray<T, N>& AB) {
     }
 
     template <typename T, std::size_t N>
-    bool intersect(const Ray<T, N>& CD, const Segment<T, N>& AB) {
+    bool intersect(const Ray<T, N>& CD, const Segment<T, N>& AB) noexcept {
         static_assert(N == 2, "Ray - Segment intersection is only defined for 2D");
         using Vector = Vector<T, N>;
         auto A = AB.p1_;
@@ -338,7 +339,7 @@ bool intersect(const Line<T, N>& CD, const Ray<T, N>& AB) {
 ================================================================================================================
 */
     template <typename T, std::size_t N>
-    constexpr bool intersect(const BoundingBox<T, N>& a, const BoundingBox<T, N>& b) {
+    constexpr bool intersect(const BoundingBox<T, N>& a, const BoundingBox<T, N>& b) noexcept {
         if (a.empty() || b.empty()) {
             return false;
         }
@@ -358,7 +359,7 @@ bool intersect(const Line<T, N>& CD, const Ray<T, N>& AB) {
 ================================================================================================================
 */
     template <typename T, std::size_t N>
-    bool intersect(const Polygon<T, N>& P1, const Polygon<T, N>& P2) {
+    bool intersect(const Polygon<T, N>& P1, const Polygon<T, N>& P2) noexcept {
         static_assert(N == 2, "Polygon intersection is only defined for 2D (N == 2)");
 
         if (!intersect(P1.boundingBox(), P2.boundingBox())) {
@@ -487,6 +488,94 @@ bool intersect(const Line<T, N>& CD, const Ray<T, N>& AB) {
 
         return false;
     }
+
+/*
+================================================================================================================
+                                Polygon - Segment
+================================================================================================================
+*/
+    template <typename T, std::size_t N>
+    bool intersect(const Polygon<T, N>& polygon, const Segment<T, N>& segment) noexcept {
+        static_assert(N == 2, "Polygon - Segment intersection is defined only for 2D (N == 2)");
+        for (const auto& edge : polygon.edges()) {
+            if (intersect(edge, segment)) {
+                return true;
+            }
+        }   
+
+        return false;
+    }
+
+    template <typename T, std::size_t N>
+    bool intersect(const Segment<T, N>& segment, const Polygon<T, N>& polygon) noexcept {
+        static_assert(N == 2, "Polygon - Segment intersection is defined only for 2D (N == 2)");
+        for (const auto& edge : polygon.edges()) {
+            if (intersect(edge, segment)) {
+                return true;
+            }
+        }   
+
+        return false;
+    }
+
+/*
+================================================================================================================
+                                Polygon - Ray
+================================================================================================================
+*/
+    template <typename T, std::size_t N>
+    bool intersect(const Polygon<T, N>& polygon, const Ray<T, N>& ray) noexcept {
+        static_assert(N == 2, "Polygon - Ray intersection is defined only for 2D (N == 2)");
+        for (const auto& edge : polygon.edges()) {
+            if (intersect(edge, ray)) {
+                return true;
+            }
+        }   
+
+        return false;
+    }
+
+    template <typename T, std::size_t N>
+    bool intersect(const Ray<T, N>& ray, const Polygon<T, N>& polygon) noexcept {
+        static_assert(N == 2, "Polygon - Ray intersection is defined only for 2D (N == 2)");
+        for (const auto& edge : polygon.edges()) {
+            if (intersect(edge, ray)) {
+                return true;
+            }
+        }   
+
+        return false;
+    }
+
+/*
+================================================================================================================
+                                Polygon - Line
+================================================================================================================
+*/
+    template <typename T, std::size_t N>
+    bool intersect(const Polygon<T, N>& polygon, const Line<T, N>& line) noexcept {
+        static_assert(N == 2, "Polygon - Line intersection is defined only for 2D (N == 2)");
+        for (const auto& edge : polygon.edges()) {
+            if (intersect(edge, line)) {
+                return true;
+            }
+        }   
+
+        return false;
+    }
+
+    template <typename T, std::size_t N>
+    bool intersect(const Line<T, N>& Line, const Polygon<T, N>& polygon) noexcept {
+        static_assert(N == 2, "Polygon - Line intersection is defined only for 2D (N == 2)");
+        for (const auto& edge : polygon.edges()) {
+            if (intersect(edge, line)) {
+                return true;
+            }
+        }   
+
+        return false;
+    }
+
 
 } // namespace algo
 
