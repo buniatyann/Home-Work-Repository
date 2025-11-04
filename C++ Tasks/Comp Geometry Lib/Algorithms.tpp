@@ -16,10 +16,10 @@ namespace algo {
                                 Segment - Segment (2D)
 ================================================================================================================
 */
-    /*template <typename T, std::size_t N>
-    bool isCounterClockwiseTurn(const Point<T, N>& A, const Point<T, N>& B, const Point<T, N>& C) {
-        return Vector<T, N>(A, B).cross(Vector<T, N>(A, C)) > 0;
-    }*/
+    // template <typename T, std::size_t N>
+    // bool isCounterClockwiseTurn(const Point<T, N>& A, const Point<T, N>& B, const Point<T, N>& C) {
+    //     return Vector<T, N>(A, B).cross(Vector<T, N>(A, C)) > 0;
+    // }
 
     template <typename T, std::size_t N>
     bool intersect(const Segment<T, N>& AB, const Segment<T, N>& CD) noexcept {
