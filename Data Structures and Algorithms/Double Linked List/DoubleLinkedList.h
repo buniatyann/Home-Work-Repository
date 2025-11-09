@@ -94,7 +94,7 @@ public:
         const_reverse_iterator operator--(int) { const_reverse_iterator tmp(*this); --(*this); return tmp; }
         bool operator==(const const_reverse_iterator& o) const { return node_ == o.node_; }
         bool operator!=(const const_reverse_iterator& o) const { return !(*this == o); }
-        
+
     private:
         friend class DoubleLinkedList;
         const Node* node_;
@@ -179,5 +179,7 @@ private:
     };
 
 };
+
+#include "DoubleLinkedList.tpp"
 
 #endif // DOUBLE_LINKED_LIST_H
