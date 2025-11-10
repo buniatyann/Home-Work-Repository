@@ -6,7 +6,6 @@
 template <typename DegreeType, typename CoeffType>
 std::list<std::pair<DegreeType, CoeffType>> PolynomSorter(const std::vector<std::pair<DegreeType, CoeffType>>& input) {
     std::list<std::pair<DegreeType, CoeffType>> lst;
-
     for (const auto& pair : input) {
         DegreeType degree = pair.first;
         CoeffType value = pair.second;
