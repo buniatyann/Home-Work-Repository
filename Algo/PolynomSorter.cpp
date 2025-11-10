@@ -16,7 +16,6 @@ std::list<std::pair<DegreeType, CoeffType>> PolynomSorter(const std::vector<std:
         } 
         else {
             bool inserted = false;
-
             if (lst.front().first < degree) {
                 lst.emplace_front(degree, value);
                 inserted = true;
