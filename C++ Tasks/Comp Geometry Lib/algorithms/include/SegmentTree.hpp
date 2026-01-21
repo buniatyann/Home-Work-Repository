@@ -6,6 +6,25 @@
 #include <cstddef>
 #include <type_traits>
 #include <limits>
+#include <memory>
+
+// Node structure for balanced binary tree
+template <typename T>
+struct SegmentTreeNode {
+    T value;
+    T lazy;
+    bool has_lazy = false;
+    std::size_t left_idx;   // Range start
+    std::size_t right_idx;  // Range end
+    std::unique_ptr<SegmentTreeNode> left;
+    std::unique_ptr<SegmentTreeNode> right;
+
+    SegmentTreeNode(std::size_t l, std::size_t r, T val)
+        : value(val), lazy{}, has_lazy(false), left_idx(l), right_idx(r) {}
+
+    bool is_leaf() const { return left_idx == right_idx; }
+    std::size_t mid() const { return left_idx + (right_idx - left_idx) / 2; }
+};
 
 template <typename T, typename Op = std::plus<T>>
 class SegmentTree {
@@ -15,13 +34,14 @@ public:
     using value_type = T;
     using size_type = std::size_t;
     using operation_type = Op;
+    using node_type = SegmentTreeNode<T>;
 
     SegmentTree() = default;
     explicit SegmentTree(size_type n, T identity = T{});
     explicit SegmentTree(const std::vector<T>& data, T identity = T{});
 
-    SegmentTree(const SegmentTree&) = default;
-    SegmentTree& operator=(const SegmentTree&) = default;
+    SegmentTree(const SegmentTree& other);
+    SegmentTree& operator=(const SegmentTree& other);
     SegmentTree(SegmentTree&&) noexcept = default;
     SegmentTree& operator=(SegmentTree&&) noexcept = default;
 
@@ -33,6 +53,9 @@ public:
 
     // Point update: modify value at index using operation
     void modify(size_type index, T delta);
+
+    // Range update: add delta to all elements in [left, right]
+    void range_update(size_type left, size_type right, T delta);
 
     // Range query: apply operation over [left, right]
     T query(size_type left, size_type right) const;
@@ -52,15 +75,23 @@ public:
     // Resize and reinitialize
     void resize(size_type n, T identity = T{});
 
+    // Tree height (for balance verification)
+    size_type height() const;
+
 private:
-    std::vector<T> tree_;
+    std::unique_ptr<node_type> root_;
     size_type n_ = 0;
     T identity_;
     Op op_;
 
-    void build_internal(const std::vector<T>& data, size_type node, size_type start, size_type end);
-    void update_internal(size_type node, size_type start, size_type end, size_type index, T value);
-    T query_internal(size_type node, size_type start, size_type end, size_type left, size_type right) const;
+    std::unique_ptr<node_type> build_tree(const std::vector<T>& data, size_type left, size_type right);
+    std::unique_ptr<node_type> clone_tree(const node_type* node) const;
+    void push_down(node_type* node) const;
+    void update_internal(node_type* node, size_type index, T value);
+    void range_update_internal(node_type* node, size_type left, size_type right, T delta);
+    T query_internal(node_type* node, size_type left, size_type right) const;
+    size_type height_internal(const node_type* node) const;
+    size_type range_length(const node_type* node) const;
 };
 
 // Common segment tree types
