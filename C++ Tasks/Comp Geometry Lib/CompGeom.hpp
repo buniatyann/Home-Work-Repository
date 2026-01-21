@@ -19,5 +19,6 @@
 #include "algorithms/include/Algorithms.hpp"
 #include "algorithms/include/Delaunay.hpp"
 #include "algorithms/include/Voronoi.hpp"
+#include "algorithms/include/SegmentTree.hpp"
 
 #endif // COMPGEOM_HPP
