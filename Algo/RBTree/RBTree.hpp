@@ -14,7 +14,6 @@
 template <typename Key, typename Compare = std::less<Key>>
 class RedBlackTree {
 public:
-    // --- Standard container type aliases ---
     using key_type        = Key;
     using value_type      = Key;
     using size_type       = std::size_t;
@@ -29,7 +28,6 @@ private:
     using NodePtr = std::shared_ptr<Node>;
 
 public:
-    // --- Iterator ---
     class iterator {
     public:
         using iterator_category = std::bidirectional_iterator_tag;
@@ -68,7 +66,6 @@ public:
     using reverse_iterator       = std::reverse_iterator<iterator>;
     using const_reverse_iterator = std::reverse_iterator<const_iterator>;
 
-    // --- Constructors / destructor / assignment ---
     RedBlackTree() : size_(0), comp_() {}
     explicit RedBlackTree(const Compare& comp) : size_(0), comp_(comp) {}
 
@@ -86,11 +83,9 @@ public:
 
     ~RedBlackTree() = default;
 
-    // --- Capacity ---
     bool empty() const noexcept;
     size_type size() const noexcept;
 
-    // --- Modifiers ---
     std::pair<iterator, bool> insert(const Key& key);
     std::pair<iterator, bool> insert(Key&& key);
 
@@ -103,7 +98,6 @@ public:
     void clear() noexcept;
     void swap(RedBlackTree& other) noexcept;
 
-    // --- Lookup ---
     iterator find(const Key& key) const;
     size_type count(const Key& key) const;
     bool contains(const Key& key) const;
@@ -112,7 +106,6 @@ public:
     iterator upper_bound(const Key& key) const;
     std::pair<iterator, iterator> equal_range(const Key& key) const;
 
-    // --- Iterators ---
     iterator begin() const noexcept;
     iterator end() const noexcept;
     const_iterator cbegin() const noexcept;
@@ -122,7 +115,6 @@ public:
     const_reverse_iterator crbegin() const noexcept;
     const_reverse_iterator crend() const noexcept;
 
-    // --- Observers ---
     key_compare key_comp() const;
     value_compare value_comp() const;
 
