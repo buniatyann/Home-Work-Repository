@@ -22,8 +22,10 @@ RedBlackTree<Key, Compare>::iterator::operator++() {
             n = p;
             p = p->parent.lock();
         }
+
         node_ = p ? std::weak_ptr<Node>(p) : std::weak_ptr<Node>();
     }
+
     return *this;
 }
 
@@ -32,6 +34,7 @@ typename RedBlackTree<Key, Compare>::iterator
 RedBlackTree<Key, Compare>::iterator::operator++(int) {
     iterator tmp = *this;
     ++(*this);
+
     return tmp;
 }
 
@@ -48,6 +51,7 @@ RedBlackTree<Key, Compare>::iterator::operator--() {
         auto cur = n->left;
         while (cur->right)
             cur = cur->right;
+
         node_ = cur;
     }
     else {
@@ -56,8 +60,10 @@ RedBlackTree<Key, Compare>::iterator::operator--() {
             n = p;
             p = p->parent.lock();
         }
+
         node_ = p ? std::weak_ptr<Node>(p) : std::weak_ptr<Node>();
     }
+
     return *this;
 }
 
@@ -66,6 +72,7 @@ typename RedBlackTree<Key, Compare>::iterator
 RedBlackTree<Key, Compare>::iterator::operator--(int) {
     iterator tmp = *this;
     --(*this);
+    
     return tmp;
 }
 
@@ -79,6 +86,7 @@ RedBlackTree<Key, Compare>::deep_copy(const NodePtr& src, NodePtr parent) const 
     node->parent = parent;
     node->left = deep_copy(src->left, node);
     node->right = deep_copy(src->right, node);
+    
     return node;
 }
 
@@ -121,6 +129,7 @@ RedBlackTree<Key, Compare>::operator=(const RedBlackTree& other) {
         RedBlackTree tmp(other);
         swap(tmp);
     }
+
     return *this;
 }
 
@@ -133,6 +142,7 @@ RedBlackTree<Key, Compare>::operator=(RedBlackTree&& other) noexcept {
         comp_ = std::move(other.comp_);
         other.size_ = 0;
     }
+    
     return *this;
 }
 
@@ -142,6 +152,7 @@ RedBlackTree<Key, Compare>::operator=(std::initializer_list<Key> init) {
     clear();
     for (const auto& v : init)
         insert(v);
+
     return *this;
 }
 
@@ -163,6 +174,7 @@ RedBlackTree<Key, Compare>::owner_of(const NodePtr& node) {
     auto par = node->parent.lock();
     if (!par) return root_;
     if (node == par->left) return par->left;
+    
     return par->right;
 }
 
@@ -626,7 +638,7 @@ bool operator==(const RedBlackTree<Key, Compare>& lhs,
     for (; it1 != lhs.end(); ++it1, ++it2)
         if (*it1 != *it2) 
             return false;
-            
+
     return true;
 }
 
