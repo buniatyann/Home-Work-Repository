@@ -57,9 +57,11 @@ ast::Rule Parser::parse_rule(const std::string& line,
             (line[i + 1] == '(' || line[i + 1] == '{')) {
             paren_depth++;
             i++;
-        } else if ((c == ')' || c == '}') && paren_depth > 0) {
+        } 
+        else if ((c == ')' || c == '}') && paren_depth > 0) {
             paren_depth--;
-        } else if (c == ':' && paren_depth == 0) {
+        } 
+        else if (c == ':' && paren_depth == 0) {
             // Check for :: (double-colon rule)
             if (i + 1 < line.size() && line[i + 1] == ':') {
                 rule.is_double_colon = true;
@@ -113,9 +115,11 @@ ast::Rule Parser::parse_rule(const std::string& line,
             (line[i + 1] == '(' || line[i + 1] == '{')) {
             paren_depth++;
             i++;
-        } else if ((c == ')' || c == '}') && paren_depth > 0) {
+        } 
+        else if ((c == ')' || c == '}') && paren_depth > 0) {
             paren_depth--;
-        } else if (c == ';' && paren_depth == 0) {
+        } 
+        else if (c == ';' && paren_depth == 0) {
             semicolon = i;
             break;
         }
@@ -129,7 +133,8 @@ ast::Rule Parser::parse_rule(const std::string& line,
         if (rs != std::string::npos) {
             inline_recipe = inline_recipe.substr(rs);
         }
-    } else {
+    } 
+    else {
         prereqs_str = line.substr(prereq_start);
     }
 
@@ -142,9 +147,11 @@ ast::Rule Parser::parse_rule(const std::string& line,
             (prereqs_str[i + 1] == '(' || prereqs_str[i + 1] == '{')) {
             paren_depth++;
             i++;
-        } else if ((c == ')' || c == '}') && paren_depth > 0) {
+        } 
+        else if ((c == ')' || c == '}') && paren_depth > 0) {
             paren_depth--;
-        } else if (c == '|' && paren_depth == 0) {
+        } 
+        else if (c == '|' && paren_depth == 0) {
             pipe_pos = i;
             break;
         }
@@ -153,7 +160,8 @@ ast::Rule Parser::parse_rule(const std::string& line,
     if (pipe_pos != std::string::npos) {
         rule.normal_prereqs = split_words(prereqs_str.substr(0, pipe_pos));
         rule.order_only_prereqs = split_words(prereqs_str.substr(pipe_pos + 1));
-    } else {
+    } 
+    else {
         rule.normal_prereqs = split_words(prereqs_str);
     }
 
@@ -206,6 +214,7 @@ ast::VariableAssignment Parser::parse_assignment(const std::string& line,
     if (end != std::string::npos) {
         name = name.substr(0, end + 1);
     }
+
     assignment.name = name;
 
     // Extract value (skip operator, trim leading whitespace)
@@ -221,7 +230,8 @@ ast::VariableAssignment Parser::parse_assignment(const std::string& line,
         auto s = value.find_first_not_of(" \t");
         if (s != std::string::npos) {
             value = value.substr(s);
-        } else {
+        } 
+        else {
             value.clear();
         }
     }
@@ -237,11 +247,13 @@ size_t Parser::find_assignment_op(const std::string& line,
         char c = line[i];
         if (c == '$' && i + 1 < line.size() &&
             (line[i + 1] == '(' || line[i + 1] == '{')) {
-            paren_depth++;
-            i++;
-        } else if ((c == ')' || c == '}') && paren_depth > 0) {
-            paren_depth--;
-        } else if (paren_depth == 0) {
+            ++paren_depth;
+            ++i;
+        } 
+        else if ((c == ')' || c == '}') && paren_depth > 0) {
+            --paren_depth;
+        } 
+        else if (paren_depth == 0) {
             if (c == ':' && i + 1 < line.size() && line[i + 1] == '=') {
                 flavor = ast::VariableAssignment::Simple;
                 return i;
@@ -275,8 +287,8 @@ std::vector<std::string> Parser::split_words(const std::string& text) {
             (text[i + 1] == '(' || text[i + 1] == '{')) {
             current += c;
             current += text[i + 1];
-            paren_depth++;
-            i++;
+            ++paren_depth;
+            ++i;
             continue;
         }
 
@@ -291,6 +303,7 @@ std::vector<std::string> Parser::split_words(const std::string& text) {
                 words.push_back(current);
                 current.clear();
             }
+            
             continue;
         }
 

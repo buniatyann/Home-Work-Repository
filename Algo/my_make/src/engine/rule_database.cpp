@@ -16,17 +16,20 @@ void RuleDatabase::add_explicit_rule(ExplicitRule rule) {
         for (const auto& prereq : rule.normal_prereqs) {
             phony_targets.insert(prereq);
         }
+
         return;
     }
 
     auto& rules = explicit_rules_[target];
     if (rule.is_double_colon) {
         rules.push_back(std::move(rule));
-    } else {
+    } 
+    else {
         // Single-colon: merge prerequisites, replace recipes if new ones given
         if (rules.empty()) {
             rules.push_back(std::move(rule));
-        } else {
+        } 
+        else {
             auto& existing = rules[0];
             for (auto& p : rule.normal_prereqs) {
                 existing.normal_prereqs.push_back(std::move(p));
@@ -52,6 +55,7 @@ RuleDatabase::find_explicit(const std::string& target) const {
     if (it != explicit_rules_.end()) {
         return &it->second;
     }
+    
     return nullptr;
 }
 
@@ -101,6 +105,7 @@ std::string RuleDatabase::substitute_pattern(const std::string& pattern,
     if (pct == std::string::npos) {
         return pattern;
     }
+    
     return pattern.substr(0, pct) + stem + pattern.substr(pct + 1);
 }
 

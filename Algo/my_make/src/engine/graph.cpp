@@ -27,7 +27,8 @@ void DependencyGraph::add_target(const std::string& target,
         node.normal_prereqs = rule.normal_prereqs;
         node.order_only_prereqs = rule.order_only_prereqs;
         node.recipes = rule.recipes;
-    } else {
+    } 
+    else {
         // Try pattern rules
         const auto* pattern = rules.find_matching_pattern(target);
         if (pattern) {
@@ -114,6 +115,7 @@ const GraphNode* DependencyGraph::node(const std::string& target) const {
     if (it != nodes_.end()) {
         return &it->second;
     }
+    
     return nullptr;
 }
 

@@ -14,6 +14,7 @@ void VariableTable::set(const std::string& name, const std::string& value,
     if (it != global.end() && !can_override(it->second, origin)) {
         return;
     }
+   
     global[name] = Variable{value, flavor, origin, false};
 }
 
@@ -23,10 +24,12 @@ void VariableTable::append(const std::string& name, const std::string& value) {
     if (it != global.end()) {
         if (it->second.value.empty()) {
             it->second.value = value;
-        } else {
+        } 
+        else {
             it->second.value += " " + value;
         }
-    } else {
+    } 
+    else {
         global[name] = Variable{value, VarFlavor::Recursive, VarOrigin::File, false};
     }
 }
@@ -47,6 +50,7 @@ std::optional<std::string> VariableTable::lookup(const std::string& name) const 
             return found->second.value;
         }
     }
+    
     return std::nullopt;
 }
 
@@ -78,8 +82,10 @@ bool VariableTable::can_override(const Variable& existing,
     if (existing.origin == VarOrigin::CommandLine &&
         new_origin != VarOrigin::Override &&
         new_origin != VarOrigin::CommandLine) {
-        return false;
+   
+            return false;
     }
+   
     return true;
 }
 

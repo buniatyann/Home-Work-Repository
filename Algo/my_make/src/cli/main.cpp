@@ -48,7 +48,8 @@ int main(int argc, char* argv[]) {
                         prule.loc = rule->loc;
                         rules.add_pattern_rule(std::move(prule));
                     }
-                } else {
+                } 
+                else {
                     // Explicit rule
                     for (const auto& target : rule->targets) {
                         mymake::ExplicitRule erule;
@@ -61,7 +62,8 @@ int main(int argc, char* argv[]) {
                         rules.add_explicit_rule(std::move(erule));
                     }
                 }
-            } else if (auto* assign = std::get_if<mymake::ast::VariableAssignment>(&node)) {
+            } 
+            else if (auto* assign = std::get_if<mymake::ast::VariableAssignment>(&node)) {
                 // Phase 1: basic variable storage (no expansion yet)
                 mymake::VarFlavor flavor = (assign->flavor == mymake::ast::VariableAssignment::Simple)
                     ? mymake::VarFlavor::Simple : mymake::VarFlavor::Recursive;
@@ -88,7 +90,8 @@ int main(int argc, char* argv[]) {
         if (goals.empty()) {
             if (rules.default_goal) {
                 goals.push_back(*rules.default_goal);
-            } else {
+            } 
+            else {
                 std::cerr << "my_make: *** No targets.  Stop." << std::endl;
                 return 2;
             }

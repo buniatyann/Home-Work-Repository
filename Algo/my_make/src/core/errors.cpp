@@ -17,11 +17,14 @@ std::string format_error(const MakeError& err) {
         if (loc.line > 0) {
             result += ":" + std::to_string(loc.line);
         }
+ 
         result += ": ";
     }
+    
     result += "*** ";
     result += err.what();
     result += ".  Stop.";
+ 
     return result;
 }
 

@@ -37,12 +37,14 @@ int Executor::execute(const DependencyGraph& graph,
                 // It's a prerequisite without a rule — it must be an existing file
                 if (!n->normal_prereqs.empty() || !n->order_only_prereqs.empty()) {
                     // Has prereqs, so it's a real rule, just no recipes
-                } else {
+                } 
+                else {
                     std::cerr << "my_make: *** No rule to make target '"
                               << target << "'.  Stop." << std::endl;
                     return 2;
                 }
             }
+
             continue;
         }
 
@@ -108,12 +110,15 @@ int Executor::run_recipes(const GraphNode& node) {
             if (cmd[0] == '@') {
                 silent = true;
                 cmd = cmd.substr(1);
-            } else if (cmd[0] == '-') {
+            } 
+            else if (cmd[0] == '-') {
                 ignore_error = true;
                 cmd = cmd.substr(1);
-            } else if (cmd[0] == '+') {
+            } 
+            else if (cmd[0] == '+') {
                 cmd = cmd.substr(1);
-            } else {
+            } 
+            else {
                 break;
             }
         }
@@ -133,6 +138,7 @@ int Executor::run_recipes(const GraphNode& node) {
             vars_.pop_scope();
             std::cerr << "my_make: *** [" << node.target
                       << "] Error " << result << std::endl;
+
             return result;
         }
     }

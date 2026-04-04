@@ -27,33 +27,44 @@ Config parse_args(int argc, char* argv[]) {
 
         if (arg == "-f" && i + 1 < argc) {
             config.makefile_path = argv[++i];
-        } else if (arg == "-j" && i + 1 < argc) {
+        } 
+        else if (arg == "-j" && i + 1 < argc) {
             config.jobs = std::atoi(argv[++i]);
             if (config.jobs < 1) config.jobs = 1;
-        } else if (arg == "-n") {
+        } 
+        else if (arg == "-n") {
             config.dry_run = true;
-        } else if (arg == "-B") {
+        } 
+        else if (arg == "-B") {
             config.always_make = true;
-        } else if (arg == "-k") {
+        } 
+        else if (arg == "-k") {
             config.keep_going = true;
-        } else if (arg == "-s") {
+        } 
+        else if (arg == "-s") {
             config.silent = true;
-        } else if (arg == "-C" && i + 1 < argc) {
+        } 
+        else if (arg == "-C" && i + 1 < argc) {
             config.directory = argv[++i];
-        } else if (arg == "--debug") {
+        } 
+        else if (arg == "--debug") {
             config.debug = true;
-        } else if (arg == "-h" || arg == "--help") {
+        } 
+        else if (arg == "-h" || arg == "--help") {
             print_usage();
             std::exit(0);
-        } else if (arg.find('=') != std::string::npos) {
+        } 
+        else if (arg.find('=') != std::string::npos) {
             // VAR=value override
             auto eq = arg.find('=');
             config.overrides[arg.substr(0, eq)] = arg.substr(eq + 1);
-        } else if (arg[0] == '-') {
+        } 
+        else if (arg[0] == '-') {
             std::cerr << "my_make: Unknown option: " << arg << std::endl;
             print_usage();
             std::exit(1);
-        } else {
+        } 
+        else {
             config.goals.push_back(arg);
         }
     }
@@ -62,11 +73,14 @@ Config parse_args(int argc, char* argv[]) {
     if (config.makefile_path.empty()) {
         if (std::filesystem::exists("GNUmakefile")) {
             config.makefile_path = "GNUmakefile";
-        } else if (std::filesystem::exists("makefile")) {
+        } 
+        else if (std::filesystem::exists("makefile")) {
             config.makefile_path = "makefile";
-        } else if (std::filesystem::exists("Makefile")) {
+        } 
+        else if (std::filesystem::exists("Makefile")) {
             config.makefile_path = "Makefile";
-        } else {
+        } 
+        else {
             std::cerr << "my_make: *** No targets specified and no makefile found.  Stop."
                       << std::endl;
             std::exit(2);
