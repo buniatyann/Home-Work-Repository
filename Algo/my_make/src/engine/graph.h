@@ -1,7 +1,7 @@
-#ifndef MYMAKE_GRAPH_GRAPH_H
-#define MYMAKE_GRAPH_GRAPH_H
+#ifndef MYMAKE_ENGINE_GRAPH_H
+#define MYMAKE_ENGINE_GRAPH_H
 
-#include "rules/rule_database.h"
+#include "engine/rule_database.h"
 #include <string>
 #include <unordered_map>
 #include <vector>
@@ -42,4 +42,4 @@ private:
 
 } // namespace mymake
 
-#endif // MYMAKE_GRAPH_GRAPH_H
+#endif // MYMAKE_ENGINE_GRAPH_H

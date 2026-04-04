@@ -1,5 +1,5 @@
-#include "graph/graph.h"
-#include "errors/errors.h"
+#include "engine/graph.h"
+#include "core/errors.h"
 
 namespace mymake {
 

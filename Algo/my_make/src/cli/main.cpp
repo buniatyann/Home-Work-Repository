@@ -1,11 +1,11 @@
 #include "cli/cli.h"
-#include "errors/errors.h"
-#include "executor/executor.h"
-#include "graph/graph.h"
-#include "lexer/lexer.h"
+#include "core/errors.h"
+#include "engine/executor.h"
+#include "engine/graph.h"
+#include "engine/rule_database.h"
+#include "eval/variable_table.h"
+#include "parser/lexer.h"
 #include "parser/parser.h"
-#include "rules/rule_database.h"
-#include "variables/variable_table.h"
 
 #include <filesystem>
 #include <iostream>

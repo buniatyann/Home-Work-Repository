@@ -1,7 +1,7 @@
-#ifndef MYMAKE_ERRORS_ERRORS_H
-#define MYMAKE_ERRORS_ERRORS_H
+#ifndef MYMAKE_CORE_ERRORS_H
+#define MYMAKE_CORE_ERRORS_H
 
-#include "lexer/source_location.h"
+#include "core/source_location.h"
 #include <stdexcept>
 #include <string>
 
@@ -45,4 +45,4 @@ std::string format_error(const MakeError& err);
 
 } // namespace mymake
 
-#endif // MYMAKE_ERRORS_ERRORS_H
+#endif // MYMAKE_CORE_ERRORS_H

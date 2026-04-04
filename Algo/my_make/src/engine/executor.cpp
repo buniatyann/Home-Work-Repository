@@ -1,6 +1,5 @@
-#include "executor/executor.h"
-#include "cli/cli.h"
-#include "errors/errors.h"
+#include "engine/executor.h"
+#include "core/errors.h"
 #include <cstdlib>
 #include <iostream>
 

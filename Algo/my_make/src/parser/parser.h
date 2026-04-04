@@ -1,8 +1,8 @@
 #ifndef MYMAKE_PARSER_PARSER_H
 #define MYMAKE_PARSER_PARSER_H
 
-#include "ast/ast.h"
-#include "lexer/lexer.h"
+#include "parser/ast.h"
+#include "parser/lexer.h"
 #include <vector>
 
 namespace mymake {

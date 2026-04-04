@@ -1,16 +1,15 @@
-#ifndef MYMAKE_EXECUTOR_EXECUTOR_H
-#define MYMAKE_EXECUTOR_EXECUTOR_H
+#ifndef MYMAKE_ENGINE_EXECUTOR_H
+#define MYMAKE_ENGINE_EXECUTOR_H
 
-#include "graph/graph.h"
-#include "variables/variable_table.h"
+#include "core/config.h"
+#include "engine/graph.h"
+#include "eval/variable_table.h"
 #include <filesystem>
 #include <optional>
 #include <string>
 #include <unordered_map>
 
 namespace mymake {
-
-struct Config; // forward declare
 
 class Executor {
 public:
@@ -37,4 +36,4 @@ private:
 
 } // namespace mymake
 
-#endif // MYMAKE_EXECUTOR_EXECUTOR_H
+#endif // MYMAKE_ENGINE_EXECUTOR_H

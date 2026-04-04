@@ -1,4 +1,4 @@
-#include "variables/variable_table.h"
+#include "eval/variable_table.h"
 #include <gtest/gtest.h>
 
 using namespace mymake;

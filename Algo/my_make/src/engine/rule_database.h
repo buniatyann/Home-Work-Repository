@@ -1,7 +1,7 @@
-#ifndef MYMAKE_RULES_RULE_DATABASE_H
-#define MYMAKE_RULES_RULE_DATABASE_H
+#ifndef MYMAKE_ENGINE_RULE_DATABASE_H
+#define MYMAKE_ENGINE_RULE_DATABASE_H
 
-#include "lexer/source_location.h"
+#include "core/source_location.h"
 #include <optional>
 #include <string>
 #include <unordered_map>
@@ -54,4 +54,4 @@ private:
 
 } // namespace mymake
 
-#endif // MYMAKE_RULES_RULE_DATABASE_H
+#endif // MYMAKE_ENGINE_RULE_DATABASE_H

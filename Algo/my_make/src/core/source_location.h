@@ -1,5 +1,5 @@
-#ifndef MYMAKE_LEXER_SOURCE_LOCATION_H
-#define MYMAKE_LEXER_SOURCE_LOCATION_H
+#ifndef MYMAKE_CORE_SOURCE_LOCATION_H
+#define MYMAKE_CORE_SOURCE_LOCATION_H
 
 #include <string>
 
@@ -16,4 +16,4 @@ struct SourceLocation {
 
 } // namespace mymake
 
-#endif // MYMAKE_LEXER_SOURCE_LOCATION_H
+#endif // MYMAKE_CORE_SOURCE_LOCATION_H

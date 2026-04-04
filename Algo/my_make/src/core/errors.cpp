@@ -1,4 +1,4 @@
-#include "errors/errors.h"
+#include "core/errors.h"
 
 namespace mymake {
 

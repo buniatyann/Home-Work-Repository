@@ -1,20 +1,9 @@
-include(FetchContent)
-FetchContent_Declare(
-    googletest
-    GIT_REPOSITORY https://github.com/google/googletest.git
-    GIT_TAG v1.14.0
-)
-FetchContent_MakeAvailable(googletest)
+cmake_minimum_required(VERSION 3.20)
+project(my_make VERSION 0.1.0 LANGUAGES CXX)
 
-enable_testing()
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-add_executable(my_make_tests
-    test_lexer.cpp
-    test_parser.cpp
-    test_variable_table.cpp
-    test_graph.cpp
-    test_executor.cpp
-)
-target_link_libraries(my_make_tests PRIVATE my_make_lib GTest::gtest_main)
-include(GoogleTest)
-gtest_discover_tests(my_make_tests)
+add_subdirectory(src)
+add_subdirectory(tests)

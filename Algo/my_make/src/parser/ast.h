@@ -1,7 +1,7 @@
-#ifndef MYMAKE_AST_AST_H
-#define MYMAKE_AST_AST_H
+#ifndef MYMAKE_PARSER_AST_H
+#define MYMAKE_PARSER_AST_H
 
-#include "lexer/source_location.h"
+#include "core/source_location.h"
 #include <string>
 #include <variant>
 #include <vector>
@@ -53,4 +53,4 @@ using Makefile = std::vector<Node>;
 
 } // namespace mymake::ast
 
-#endif // MYMAKE_AST_AST_H
+#endif // MYMAKE_PARSER_AST_H

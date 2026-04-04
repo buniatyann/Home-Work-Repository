@@ -1,8 +1,8 @@
-#include "cli/cli.h"
-#include "executor/executor.h"
-#include "graph/graph.h"
-#include "rules/rule_database.h"
-#include "variables/variable_table.h"
+#include "core/config.h"
+#include "engine/executor.h"
+#include "engine/graph.h"
+#include "engine/rule_database.h"
+#include "eval/variable_table.h"
 #include <gtest/gtest.h>
 
 using namespace mymake;

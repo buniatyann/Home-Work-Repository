@@ -1,7 +1,7 @@
-#ifndef MYMAKE_LEXER_LEXER_H
-#define MYMAKE_LEXER_LEXER_H
+#ifndef MYMAKE_PARSER_LEXER_H
+#define MYMAKE_PARSER_LEXER_H
 
-#include "lexer/source_location.h"
+#include "core/source_location.h"
 #include <string>
 #include <vector>
 
@@ -45,4 +45,4 @@ private:
 
 } // namespace mymake
 
-#endif // MYMAKE_LEXER_LEXER_H
+#endif // MYMAKE_PARSER_LEXER_H

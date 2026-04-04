@@ -1,5 +1,5 @@
-#ifndef MYMAKE_VARIABLES_VARIABLE_TABLE_H
-#define MYMAKE_VARIABLES_VARIABLE_TABLE_H
+#ifndef MYMAKE_EVAL_VARIABLE_TABLE_H
+#define MYMAKE_EVAL_VARIABLE_TABLE_H
 
 #include <optional>
 #include <string>
@@ -50,4 +50,4 @@ private:
 
 } // namespace mymake
 
-#endif // MYMAKE_VARIABLES_VARIABLE_TABLE_H
+#endif // MYMAKE_EVAL_VARIABLE_TABLE_H
