@@ -1,7 +1,7 @@
-#include "core/config.h"
-#include "engine/executor.h"
-#include "engine/graph.h"
-#include "engine/rule_database.h"
+#include "core/config/config.h"
+#include "engine/execution/executor.h"
+#include "engine/graph/graph.h"
+#include "engine/rule_database/rule_database.h"
 #include "eval/variable_table.h"
 #include <gtest/gtest.h>
 

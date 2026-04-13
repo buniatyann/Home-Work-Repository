@@ -1,23 +1,24 @@
 add_library(my_make_lib STATIC
     # core
-    core/errors.cpp
+    modules/core/errors/errors.cpp
 
     # parser (lexer + parser + ast)
-    parser/lexer.cpp
-    parser/parser.cpp
+    modules/parser/lexer/lexer.cpp
+    modules/parser/parser/parser.cpp
 
-    # eval (variable table + future evaluator/functions)
-    eval/variable_table.cpp
+    # eval (variable table + expander)
+    modules/eval/variable_table.cpp
+    modules/eval/expander.cpp
 
     # engine (rules + graph + executor)
-    engine/rule_database.cpp
-    engine/graph.cpp
-    engine/executor.cpp
+    modules/engine/rule_database/rule_database.cpp
+    modules/engine/graph/graph.cpp
+    modules/engine/execution/executor.cpp
 
     # cli
-    cli/cli.cpp
+    modules/cli/cli.cpp
 )
-target_include_directories(my_make_lib PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories(my_make_lib PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/modules)
 
-add_executable(my_make cli/main.cpp)
+add_executable(my_make app/main.cpp)
 target_link_libraries(my_make PRIVATE my_make_lib)

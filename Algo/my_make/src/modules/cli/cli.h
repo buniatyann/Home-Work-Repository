@@ -1,7 +1,7 @@
 #ifndef MYMAKE_CLI_CLI_H
 #define MYMAKE_CLI_CLI_H
 
-#include "core/config.h"
+#include "core/config/config.h"
 
 namespace mymake {
 

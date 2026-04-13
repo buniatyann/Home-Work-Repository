@@ -1,7 +1,7 @@
 #ifndef MYMAKE_PARSER_AST_H
 #define MYMAKE_PARSER_AST_H
 
-#include "core/source_location.h"
+#include "core/source_location/source_location.h"
 #include <string>
 #include <variant>
 #include <vector>

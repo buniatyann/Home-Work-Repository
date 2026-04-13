@@ -1,7 +1,7 @@
 #ifndef MYMAKE_ENGINE_RULE_DATABASE_H
 #define MYMAKE_ENGINE_RULE_DATABASE_H
 
-#include "core/source_location.h"
+#include "core/source_location/source_location.h"
 #include <optional>
 #include <string>
 #include <unordered_map>

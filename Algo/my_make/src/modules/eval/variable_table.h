@@ -31,6 +31,9 @@ public:
     // Simple lookup — returns the raw (unexpanded) value.
     std::optional<std::string> lookup(const std::string& name) const;
 
+    // Full lookup — returns the entire Variable (value + flavor + origin).
+    std::optional<Variable> lookup_full(const std::string& name) const;
+
     bool is_defined(const std::string& name) const;
 
     // Push/pop scope for automatic variables ($@, $<, etc.)

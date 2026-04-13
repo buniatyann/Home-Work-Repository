@@ -54,6 +54,16 @@ std::optional<std::string> VariableTable::lookup(const std::string& name) const 
     return std::nullopt;
 }
 
+std::optional<Variable> VariableTable::lookup_full(const std::string& name) const {
+    for (auto it = scopes_.rbegin(); it != scopes_.rend(); ++it) {
+        auto found = it->find(name);
+        if (found != it->end()) {
+            return found->second;
+        }
+    }
+    return std::nullopt;
+}
+
 bool VariableTable::is_defined(const std::string& name) const {
     return lookup(name).has_value();
 }

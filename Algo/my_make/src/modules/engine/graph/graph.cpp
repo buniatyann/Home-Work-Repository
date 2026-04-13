@@ -1,10 +1,11 @@
-#include "engine/graph.h"
-#include "core/errors.h"
+#include "engine/graph/graph.h"
+#include "core/errors/errors.h"
 
 namespace mymake {
 
 void DependencyGraph::build(const std::vector<std::string>& goals,
                              const RuleDatabase& rules) {
+    goals_ = goals;
     for (const auto& goal : goals) {
         add_target(goal, rules);
     }
@@ -23,10 +24,18 @@ void DependencyGraph::add_target(const std::string& target,
     // Try explicit rules first
     const auto* explicit_rules = rules.find_explicit(target);
     if (explicit_rules && !explicit_rules->empty()) {
-        const auto& rule = (*explicit_rules)[0];
-        node.normal_prereqs = rule.normal_prereqs;
-        node.order_only_prereqs = rule.order_only_prereqs;
-        node.recipes = rule.recipes;
+        // For double-colon rules, collect prereqs and recipes from all entries.
+        for (const auto& rule : *explicit_rules) {
+            for (const auto& p : rule.normal_prereqs) {
+                node.normal_prereqs.push_back(p);
+            }
+            for (const auto& p : rule.order_only_prereqs) {
+                node.order_only_prereqs.push_back(p);
+            }
+            for (const auto& r : rule.recipes) {
+                node.recipes.push_back(r);
+            }
+        }
     } 
     else {
         // Try pattern rules
@@ -66,6 +75,16 @@ std::vector<std::string> DependencyGraph::topological_order() const {
     }
 
     std::vector<std::string> order;
+
+    // Start DFS from goals in their declared order.
+    // This ensures prerequisite ordering is respected.
+    for (const auto& goal : goals_) {
+        if (colors.count(goal) && colors[goal] == Color::White) {
+            topo_sort(goal, colors, order);
+        }
+    }
+
+    // Visit any remaining nodes not reachable from goals.
     for (const auto& [name, _] : nodes_) {
         if (colors[name] == Color::White) {
             topo_sort(name, colors, order);

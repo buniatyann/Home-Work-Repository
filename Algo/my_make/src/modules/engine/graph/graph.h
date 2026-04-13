@@ -1,7 +1,7 @@
 #ifndef MYMAKE_ENGINE_GRAPH_H
 #define MYMAKE_ENGINE_GRAPH_H
 
-#include "engine/rule_database.h"
+#include "engine/rule_database/rule_database.h"
 #include <string>
 #include <unordered_map>
 #include <vector>
@@ -38,6 +38,7 @@ private:
                    std::vector<std::string>& order) const;
 
     std::unordered_map<std::string, GraphNode> nodes_;
+    std::vector<std::string> goals_;
 };
 
 } // namespace mymake

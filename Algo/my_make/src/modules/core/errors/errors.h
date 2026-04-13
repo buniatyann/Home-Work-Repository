@@ -1,7 +1,7 @@
 #ifndef MYMAKE_CORE_ERRORS_H
 #define MYMAKE_CORE_ERRORS_H
 
-#include "core/source_location.h"
+#include "core/source_location/source_location.h"
 #include <stdexcept>
 #include <string>
 

@@ -1,12 +1,12 @@
-#include "engine/executor.h"
-#include "core/errors.h"
+#include "engine/execution/executor.h"
+#include "core/errors/errors.h"
 #include <cstdlib>
 #include <iostream>
 
 namespace mymake {
 
 Executor::Executor(const Config& config, VariableTable& vars)
-    : config_(config), vars_(vars) {}
+    : config_(config), vars_(vars), expander_(vars) {}
 
 int Executor::execute(const DependencyGraph& graph,
                        const std::vector<std::string>& goals) {
@@ -101,8 +101,10 @@ int Executor::run_recipes(const GraphNode& node) {
     for (const auto& recipe : node.recipes) {
         if (recipe.empty()) continue;
 
-        // Parse recipe prefixes: @ (silent), - (ignore error), + (force)
-        std::string cmd = recipe;
+        // Expand variables first, then parse prefixes.
+        // This way $(QUIET)echo becomes @echo, and the @ is recognized.
+        std::string cmd = expander_.expand(recipe);
+
         bool silent = config_.silent;
         bool ignore_error = false;
 
@@ -110,14 +112,14 @@ int Executor::run_recipes(const GraphNode& node) {
             if (cmd[0] == '@') {
                 silent = true;
                 cmd = cmd.substr(1);
-            } 
+            }
             else if (cmd[0] == '-') {
                 ignore_error = true;
                 cmd = cmd.substr(1);
-            } 
+            }
             else if (cmd[0] == '+') {
                 cmd = cmd.substr(1);
-            } 
+            }
             else {
                 break;
             }
@@ -131,9 +133,7 @@ int Executor::run_recipes(const GraphNode& node) {
 
         if (cmd.empty()) continue;
 
-        // TODO: expand variables in cmd (Phase 2)
-
-        result = run_command(cmd, silent, ignore_error);
+        result = run_command(cmd, silent);
         if (result != 0 && !ignore_error) {
             vars_.pop_scope();
             std::cerr << "my_make: *** [" << node.target
@@ -147,8 +147,7 @@ int Executor::run_recipes(const GraphNode& node) {
     return 0;
 }
 
-int Executor::run_command(const std::string& command,
-                           bool silent, bool ignore_error) {
+int Executor::run_command(const std::string& command, bool silent) {
     if (!silent) {
         std::cout << command << std::endl;
     }

@@ -1,6 +1,6 @@
-#include "engine/graph.h"
-#include "core/errors.h"
-#include "engine/rule_database.h"
+#include "engine/graph/graph.h"
+#include "core/errors/errors.h"
+#include "engine/rule_database/rule_database.h"
 #include <gtest/gtest.h>
 
 using namespace mymake;

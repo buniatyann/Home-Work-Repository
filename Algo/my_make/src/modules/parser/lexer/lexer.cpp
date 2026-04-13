@@ -1,5 +1,5 @@
-#include "parser/lexer.h"
-#include "core/errors.h"
+#include "parser/lexer/lexer.h"
+#include "core/errors/errors.h"
 #include <fstream>
 #include <sstream>
 

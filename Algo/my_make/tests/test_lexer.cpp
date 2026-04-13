@@ -1,4 +1,4 @@
-#include "parser/lexer.h"
+#include "parser/lexer/lexer.h"
 #include <gtest/gtest.h>
 
 using namespace mymake;

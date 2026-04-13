@@ -1,5 +1,5 @@
-#include "parser/parser.h"
-#include "core/errors.h"
+#include "parser/parser/parser.h"
+#include "core/errors/errors.h"
 #include <algorithm>
 
 namespace mymake {
@@ -28,10 +28,14 @@ ast::Makefile Parser::parse(const std::vector<LogicalLine>& lines) {
             break;
         }
 
-        case LogicalLine::Directive:
-            // Phase 1: skip directives (include, conditionals, etc.)
-            // They will be handled in later phases.
+        case LogicalLine::Directive: {
+            auto inc = parse_include(line.content, line.location);
+            if (inc) {
+                makefile.push_back(std::move(*inc));
+            }
+            // Other directives (ifeq, ifdef, etc.) are not yet handled.
             break;
+        }
 
         case LogicalLine::Empty:
             break;
@@ -315,6 +319,35 @@ std::vector<std::string> Parser::split_words(const std::string& text) {
     }
 
     return words;
+}
+
+std::optional<ast::Include> Parser::parse_include(const std::string& content,
+                                                   const SourceLocation& loc) {
+    std::string work = content;
+
+    bool silent = false;
+    if (work.starts_with("-include ") || work.starts_with("-include\t")) {
+        silent = true;
+        work = work.substr(9);
+    } else if (work.starts_with("sinclude ") || work.starts_with("sinclude\t")) {
+        silent = true;
+        work = work.substr(9);
+    } else if (work.starts_with("include ") || work.starts_with("include\t")) {
+        work = work.substr(8);
+    } else {
+        return std::nullopt;
+    }
+
+    auto files = split_words(work);
+    if (files.empty()) {
+        return std::nullopt;
+    }
+
+    ast::Include inc;
+    inc.files = std::move(files);
+    inc.is_silent = silent;
+    inc.loc = loc;
+    return inc;
 }
 
 } // namespace mymake

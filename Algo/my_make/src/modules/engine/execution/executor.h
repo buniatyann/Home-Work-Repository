@@ -1,8 +1,9 @@
 #ifndef MYMAKE_ENGINE_EXECUTOR_H
 #define MYMAKE_ENGINE_EXECUTOR_H
 
-#include "core/config.h"
-#include "engine/graph.h"
+#include "core/config/config.h"
+#include "engine/graph/graph.h"
+#include "eval/expander.h"
 #include "eval/variable_table.h"
 #include <filesystem>
 #include <optional>
@@ -22,7 +23,7 @@ public:
 private:
     bool needs_rebuild(const GraphNode& node) const;
     int run_recipes(const GraphNode& node);
-    int run_command(const std::string& command, bool silent, bool ignore_error);
+    int run_command(const std::string& command, bool silent);
 
     std::optional<std::filesystem::file_time_type>
         get_mtime(const std::string& path) const;
@@ -32,6 +33,7 @@ private:
 
     const Config& config_;
     VariableTable& vars_;
+    Expander expander_;
 };
 
 } // namespace mymake

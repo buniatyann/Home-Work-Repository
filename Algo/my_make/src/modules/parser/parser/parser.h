@@ -1,8 +1,9 @@
 #ifndef MYMAKE_PARSER_PARSER_H
 #define MYMAKE_PARSER_PARSER_H
 
-#include "parser/ast.h"
-#include "parser/lexer.h"
+#include "ast/ast.h"
+#include "parser/lexer/lexer.h"
+#include <optional>
 #include <vector>
 
 namespace mymake {
@@ -14,6 +15,10 @@ public:
     // Parse logical lines into AST nodes.
     // In Phase 1, only rules (targets + recipes) are parsed.
     ast::Makefile parse(const std::vector<LogicalLine>& lines);
+
+    // Split a whitespace-separated string into words.
+    // Respects $(...) and ${...} grouping.
+    static std::vector<std::string> split_words(const std::string& text);
 
 private:
     // Parse a rule line: "target1 target2 : prereq1 prereq2"
@@ -27,13 +32,14 @@ private:
     ast::VariableAssignment parse_assignment(const std::string& line,
                                               const SourceLocation& loc);
 
-    // Split a whitespace-separated string into words.
-    std::vector<std::string> split_words(const std::string& text);
-
     // Find the assignment operator in a line. Returns the position of the
     // operator and sets flavor. Returns std::string::npos if not found.
     size_t find_assignment_op(const std::string& line,
                               ast::VariableAssignment::Flavor& flavor);
+
+    // Parse an include/sinclude/-include directive line.
+    std::optional<ast::Include> parse_include(const std::string& content,
+                                              const SourceLocation& loc);
 };
 
 } // namespace mymake

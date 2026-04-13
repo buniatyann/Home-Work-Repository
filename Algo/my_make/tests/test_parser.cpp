@@ -1,5 +1,5 @@
-#include "parser/lexer.h"
-#include "parser/parser.h"
+#include "parser/lexer/lexer.h"
+#include "parser/parser/parser.h"
 #include <gtest/gtest.h>
 
 using namespace mymake;
